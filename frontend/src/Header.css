@@ -1,0 +1,43 @@
+/* Header.css */
+.header {
+  background-color: #333;
+  /* Dark background */
+  color: #f4f4f4;
+  /* Light color text */
+  padding: 100px 50px;
+  /* Padding for some breathing room */
+  display: flex;
+  /* Using flex to align navigation items */
+  align-items: center;
+  /* Align items vertically */
+  justify-content: flex-start;
+  /* Space between logo and navigation */
+}
+
+.header .logo {
+  font-size: 24px;
+  /* Larger text for the logo */
+  font-weight: bold;
+  /* Make the logo text bold */
+}
+
+.header nav {
+  display: flex;
+  /* Display nav items in a row */
+}
+
+.header nav a {
+  color: #f4f4f4;
+  /* Light color for links */
+  text-decoration: none;
+  /* No underline for links */
+  padding: 0 20px;
+  /* Padding around links */
+  font-size: 20px;
+  /* Font size for navigation links */
+}
+
+.header nav a:hover {
+  text-decoration: underline;
+  /* Underline on hover for better usability */
+}

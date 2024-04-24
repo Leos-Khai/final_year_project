@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useUserContext } from './App'; // Make sure the path is correct
+import './Login.css';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -21,8 +22,9 @@ function Login() {
   };
 
   return (
-    <div class="App">
+    <div className="login-container">
       <form onSubmit={handleSubmit}>
+        <h2>Log In</h2>
         <label>
           Username:
           <input type="text" value={username} onChange={e => setUsername(e.target.value)} required />
@@ -32,7 +34,8 @@ function Login() {
           Password:
           <input type="password" value={password} onChange={e => setPassword(e.target.value)} required />
         </label>
-        <button type="submit">Login</button>
+        <br />
+        <input type="submit" value="Login" />
       </form>
     </div>
   );

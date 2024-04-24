@@ -1,0 +1,77 @@
+/* Login.css */
+.login-container {
+  border: 2px solid #007BFF;
+  /* Visible blue border around the login area */
+  padding: 20px;
+  /* Padding around the content inside the container */
+  width: 300px;
+  /* Fixed width for the login form */
+  margin: 50px auto;
+  /* Center the form on the page vertically and horizontally */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  /* Subtle shadow for depth */
+  background-color: #f9f9f9;
+  /* Light background for the container */
+}
+
+.login-container h2 {
+  text-align: center;
+  /* Center align the title */
+  color: #333;
+  /* Dark color for the text */
+  font-size: 24px;
+  /* Larger font size for the title */
+}
+
+.login-container label {
+  font-size: 18px;
+  /* Enlarged text for better readability */
+  color: #666;
+  /* Slightly lighter color for labels */
+  display: block;
+  /* Makes each label start on a new line */
+  margin-bottom: 5px;
+  /* Space between the label and the input box */
+}
+
+.login-container input[type="text"],
+.login-container input[type="password"] {
+  width: 100%;
+  /* Make input take full width of the form */
+  padding: 8px;
+  /* Padding inside the input box */
+  margin-bottom: 10px;
+  /* Space between each input and the next element */
+  border: 1px solid #ccc;
+  /* Subtle border for inputs */
+  border-radius: 4px;
+  /* Slightly rounded corners for the inputs */
+  box-sizing: border-box;
+  /* Includes padding and border in the width */
+  background-color: white;
+  /* White background for inputs */
+}
+
+.login-container input[type="submit"] {
+  width: 100%;
+  /* Full-width button */
+  padding: 10px;
+  /* Comfortable padding inside the button */
+  background-color: #007BFF;
+  /* Blue background for the submit button */
+  color: white;
+  /* White text color for the button */
+  border: none;
+  /* No border for the button */
+  border-radius: 4px;
+  /* Rounded corners for the button */
+  cursor: pointer;
+  /* Pointer cursor on hover */
+  font-size: 18px;
+  /* Larger font size for the button */
+}
+
+.login-container input[type="submit"]:hover {
+  background-color: #0056b3;
+  /* Darker blue on hover for better feedback */
+}
