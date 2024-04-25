@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useUserContext } from './App'; // Make sure the path is correct
 import './Login.css';
 
@@ -35,6 +36,7 @@ function Login() {
           <input type="password" value={password} onChange={e => setPassword(e.target.value)} required />
         </label>
         <br />
+        <p>Don't have an account? You can <Link to="/register">register here</Link>.</p>
         <input type="submit" value="Login" />
       </form>
     </div>

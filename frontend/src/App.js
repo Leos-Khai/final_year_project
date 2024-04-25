@@ -1,8 +1,13 @@
 import React, { createContext, useContext, useState, useMemo } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Login from './Login';
+import RegisterPage from './Registration';
 import HomePage from './HomePage';
 import Logout from './Logout';
+import Post from './Post';
+import Friends from './Friends';
+import UserDetail from './UserDetail';
+import PostDetail from './PostDetail';
 import Header from './Header';
 import Footer from './Footer';
 import './App.css';
@@ -22,11 +27,16 @@ function App() {
       <UserContext.Provider value={providerValue}>
         <Router>
           <Header />
-          <main>
+          <main aria-live="polite">
             <Routes>
               <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
+              <Route path="/register" element={!user ? <RegisterPage /> : <Navigate to="/" />} />
               <Route path="/" element={user ? <HomePage /> : <Navigate to="/login" />} />
               <Route path="/logout" element={<Logout />} />
+              <Route path="/post" element={user ? <Post /> : <Navigate to="/login" />} />
+              <Route path="/friends" element={user ? <Friends /> : <Navigate to="/login" />} />
+              <Route path="/user-detail" element={user ? <UserDetail /> : <Navigate to="/login" />} />
+              <Route path="/post-detail" element={user ? <PostDetail /> : <Navigate to="/login" />} />
               <Route path="/contact" element={<HomePage />} />
               <Route path="/about" element={<HomePage />} />
             </Routes>

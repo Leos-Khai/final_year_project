@@ -7,7 +7,7 @@ function Header() {
   const { user } = useUserContext();
   return (
     <header className="header">
-      <div className="logo">My Application</div>
+      <div className="logo">Social Media Sdn. Bhd.</div>
       <nav>
         <Link to="/">Home</Link>
         <Link to="/about">About</Link>
@@ -15,6 +15,7 @@ function Header() {
         {user && <Link to="/friends">Friends</Link>}
         {user && <Link to="/post">Post</Link>}
         {!user ? (<Link to="/login">Log-in</Link>) : (<Link to="/logout">Log-out</Link>)}
+        {!user && <Link to="/register">Register</Link>}
       </nav>
     </header>
   );

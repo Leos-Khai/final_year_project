@@ -1,0 +1,47 @@
+.homepage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: #333; /* Dark background for the whole page */
+  color: #f4f4f4; /* Light text for readability */
+}
+
+.post {
+  width: 80%;
+  max-width: 600px;
+  background-color: #424242; /* Slightly lighter dark shade for contrast */
+  margin: 10px 0;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Stronger shadow for depth */
+}
+
+.post h2 {
+  color: #f4f4f4; /* Light text for the title */
+}
+
+.post p {
+  color: #ddd; /* Lighter text for the content */
+}
+
+.actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.actions button {
+  padding: 10px 20px;
+  color: #333; /* Dark text on light buttons */
+  background-color: #e0e0e0; /* Light gray background for buttons */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.actions button:hover {
+  background-color: #bdbdbd; /* Darker shade on hover for buttons */
+  color: #222; /* Darker text on hover */
+}
