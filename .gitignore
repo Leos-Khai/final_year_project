@@ -12,3 +12,6 @@ Cargo.lock
 
 # MSVC Windows builds of rustc generate these, which store debugging information
 *.pdb
+BERT_Training/Fake.csv
+BERT_Training/True.csv
+BERT_Training/archive.zip
