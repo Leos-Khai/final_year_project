@@ -9,3 +9,7 @@
 ### Backend
 
 ### Database
+
+### Resources
+- (Dataset for fake and real
+  news)[https://www.kaggle.com/datasets/clmentbisaillon/fake-and-real-news-dataset]
