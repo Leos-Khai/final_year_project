@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useMemo } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Login from './Login';
 import RegisterPage from './Registration';
+import Register from './components/Register';
 import HomePage from './HomePage';
 import Logout from './Logout';
 import Post from './Post';
@@ -31,6 +32,7 @@ function App() {
             <Routes>
               <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
               <Route path="/register" element={!user ? <RegisterPage /> : <Navigate to="/" />} />
+              <Route path="/register2" element={!user ? <Register /> : <Navigate to="/" />} />
               <Route path="/" element={user ? <HomePage /> : <Navigate to="/login" />} />
               <Route path="/logout" element={<Logout />} />
               <Route path="/post" element={user ? <Post /> : <Navigate to="/login" />} />

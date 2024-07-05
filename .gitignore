@@ -18,3 +18,6 @@ BERT_Training/archive.zip
 BERT_Training/env/
 *.onnx
 backend/__tokenizer.json
+backend/.env
+backend/.sqlx
+

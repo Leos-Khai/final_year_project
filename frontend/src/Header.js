@@ -16,6 +16,7 @@ function Header() {
         {user && <Link to="/post">Post</Link>}
         {!user ? (<Link to="/login">Log-in</Link>) : (<Link to="/logout">Log-out</Link>)}
         {!user && <Link to="/register">Register</Link>}
+        {!user && <Link to="/register2">Register2</Link>}
       </nav>
     </header>
   );

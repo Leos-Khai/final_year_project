@@ -6,6 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+actix-cors = "0.7.0"
 actix-rt = "2.10.0"
 actix-web = "4.0"
 bcrypt = "0.15.1"
@@ -15,6 +16,14 @@ ndarray = "0.15.1"
 onnxruntime = "0.0.14"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-sqlx = { version = "0.7.4", features = ["runtime-tokio-native-tls", "postgres"] }
+sqlx = { version = "0.7.4", features = ["runtime-tokio-native-tls", "postgres", "runtime-tokio-rustls", "macros"] }
 tokenizers = "0.19.1"
+tokio = { version = "1.38", features = ["full"] }
 uuid = {version = "1.9.1", features = ["v4"]}
+
+[dev-dependencies]
+actix-http = "3"
+
+[lib]
+name = "backend"
+path = "src/lib.rs"
