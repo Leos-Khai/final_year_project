@@ -71,3 +71,27 @@ CREATE TABLE block (
     FOREIGN KEY (blocked_id) REFERENCES member(member_id) ON DELETE CASCADE,
     CHECK (blocker_id <> blocked_id)  -- Ensure a user cannot block themselves
 );
+
+-- Creating the 'user_authentication' view
+CREATE VIEW user_authentication AS
+SELECT
+    member_id AS user_id,
+    username,
+    email,
+    password_hash,
+    full_name,
+    phone_number,
+    profile_pic,
+    'member' AS user_type
+FROM member
+UNION ALL
+SELECT
+    admin_id AS user_id,
+    username,
+    NULL AS email,
+    password_hash,
+    full_name,
+    phone_number,
+    profile_pic,
+    'admin' AS user_type
+FROM admin;

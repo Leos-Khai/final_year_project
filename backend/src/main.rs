@@ -2,6 +2,8 @@ mod handlers;
 mod models;
 
 use actix_cors::Cors;
+use actix_session::{storage::CookieSessionStore, SessionMiddleware};
+use actix_web::cookie::Key;
 use actix_web::{web, App, HttpServer};
 use sqlx::PgPool;
 use std::env;
@@ -14,19 +16,28 @@ async fn main() -> std::io::Result<()> {
         .await
         .expect("Failed to connect to the database");
 
+    // Create a key for the cookie session
+    let private_key = Key::generate();
+
     HttpServer::new(move || {
         let cors = Cors::default()
             .allow_any_origin()
             .allow_any_method()
-            .allow_any_header();
+            .allow_any_header()
+            .supports_credentials(); // This line allows credentials to be sent
 
         App::new()
             .app_data(web::Data::new(pool.clone()))
             .wrap(cors)
+            .wrap(SessionMiddleware::new(
+                CookieSessionStore::default(),
+                private_key.clone(),
+            ))
             .service(
                 web::scope("/auth")
                     .route("/register", web::post().to(handlers::auth::register))
-                    .route("/login", web::post().to(handlers::auth::login)),
+                    .route("/login", web::post().to(handlers::auth::login))
+                    .route("/logout", web::post().to(handlers::auth::logout)),
             )
     })
     .bind("127.0.0.1:8080")?

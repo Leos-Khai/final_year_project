@@ -1,11 +1,11 @@
+use crate::models::member_model::Member;
+use actix_session::Session;
 use actix_web::{web, HttpResponse, Responder};
-use bcrypt::{hash, DEFAULT_COST};
+use bcrypt::{hash, verify, DEFAULT_COST};
 use serde::Deserialize;
 use sqlx::PgPool;
 
-use crate::models::member_model::Member;
-
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct RegisterInput {
     pub username: String,
     pub email: String,
@@ -13,6 +13,8 @@ pub struct RegisterInput {
 }
 
 pub async fn register(pool: web::Data<PgPool>, info: web::Json<RegisterInput>) -> impl Responder {
+    println!("Received register request: {:?}", info);
+
     let username = &info.username;
     let email = &info.email;
     let password = &info.password;
@@ -20,7 +22,10 @@ pub async fn register(pool: web::Data<PgPool>, info: web::Json<RegisterInput>) -
     // Hash the password
     let password_hash = match hash(password, DEFAULT_COST) {
         Ok(hash) => hash,
-        Err(_) => return HttpResponse::InternalServerError().json("Error hashing password"),
+        Err(e) => {
+            eprintln!("Error hashing password: {:?}", e);
+            return HttpResponse::InternalServerError().json("Error hashing password");
+        }
     };
 
     // Create a new member
@@ -36,7 +41,10 @@ pub async fn register(pool: web::Data<PgPool>, info: web::Json<RegisterInput>) -
 
     match Member::create(&pool, new_member).await {
         Ok(member) => HttpResponse::Ok().json(member),
-        Err(_) => HttpResponse::InternalServerError().json("Error creating user"),
+        Err(e) => {
+            eprintln!("Error creating user: {:?}", e);
+            HttpResponse::InternalServerError().json("Error creating user")
+        }
     }
 }
 
@@ -46,11 +54,32 @@ pub struct LoginInput {
     pub password: String,
 }
 
-pub async fn login(info: web::Json<LoginInput>) -> impl Responder {
+pub async fn login(
+    pool: web::Data<PgPool>,
+    info: web::Json<LoginInput>,
+    session: Session,
+) -> impl Responder {
     let username = &info.username;
     let password = &info.password;
-    HttpResponse::Ok().json(format!(
-        "User {} logged in with password {}",
-        username, password
-    ))
+
+    let result = sqlx::query_as!(Member, "SELECT * FROM member WHERE username = $1", username)
+        .fetch_one(pool.get_ref())
+        .await;
+
+    match result {
+        Ok(member) => {
+            if verify(password, &member.password_hash).unwrap() {
+                session.insert("user_id", member.member_id).unwrap();
+                return HttpResponse::Ok().json("Logged in");
+            } else {
+                return HttpResponse::Unauthorized().json("Invalid credentials");
+            }
+        }
+        Err(_) => return HttpResponse::Unauthorized().json("Invalid credentials"),
+    }
+}
+
+pub async fn logout(session: Session) -> impl Responder {
+    session.purge();
+    HttpResponse::Ok().json("Logged out")
 }
