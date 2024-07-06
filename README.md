@@ -11,7 +11,9 @@
 ### Database
 - Run run ```pg_ctl start``` or ```pg_ctl stop``` to start and stop the database or register it as a service by running ```pg_ctl register -N PostgreSQL``` from an elevated shell.
 - Default superuser login: postgres, password: redacted
-- Backup database: ```pg_dump -U postgres -W -F c -b -v -f db_backup.dump social_media_db```
+- Backup database: 
+```sql
+pg_dump -U postgres -W -F c -b -v -f db_backup.dump social_media_db
 
 
 ### Resources
