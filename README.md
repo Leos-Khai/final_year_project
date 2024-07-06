@@ -35,6 +35,11 @@ My doom
    ```sh
    pg_dump -U postgres -W -F c -b -v -f db_backup.dump social_media_db
    ```
+4. Restoring backup:
+   ```sh
+   pg_restore -U postgres -W -d social_media_db -v db_backup.dump
+   ```
+
 
 ### Resources
 - [Dataset for fake and real news](https://www.kaggle.com/datasets/clmentbisaillon/fake-and-real-news-dataset)
