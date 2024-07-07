@@ -21,7 +21,7 @@ CREATE TABLE admin (
 );
 
 -- Creating the 'post' table
-CREATE TABLE post (
+CREATE TABLE posts (
     post_id SERIAL PRIMARY KEY,
     post_title VARCHAR(255) NOT NULL,
     post_content TEXT NOT NULL,
@@ -44,7 +44,7 @@ CREATE TABLE comments (
     author_type VARCHAR(100) NOT NULL,
     author_id INTEGER NOT NULL,
     post_id INTEGER NOT NULL,
-    FOREIGN KEY (post_id) REFERENCES post(post_id) ON DELETE CASCADE,
+    FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE,
     FOREIGN KEY (author_id) REFERENCES member(member_id) ON DELETE SET NULL
         DEFERRABLE INITIALLY DEFERRED,
     FOREIGN KEY (author_id) REFERENCES admin(admin_id) ON DELETE SET NULL

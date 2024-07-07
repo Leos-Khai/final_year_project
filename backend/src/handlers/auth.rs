@@ -1,4 +1,4 @@
-use crate::models::member_model::Member;
+use crate::models::user_model::User;
 use actix_session::Session;
 use actix_web::{web, HttpResponse, Responder};
 use bcrypt::{hash, verify, DEFAULT_COST};
@@ -29,7 +29,7 @@ pub async fn register(pool: web::Data<PgPool>, info: web::Json<RegisterInput>) -
     };
 
     // Create a new member
-    let new_member = Member {
+    let new_member = crate::models::member_model::Member {
         member_id: 0, // This will be ignored by the database
         username: username.clone(),
         email: email.clone(),
@@ -39,7 +39,7 @@ pub async fn register(pool: web::Data<PgPool>, info: web::Json<RegisterInput>) -
         profile_pic: None,
     };
 
-    match Member::create(&pool, new_member).await {
+    match crate::models::member_model::Member::create(&pool, new_member).await {
         Ok(member) => HttpResponse::Ok().json(member),
         Err(e) => {
             eprintln!("Error creating user: {:?}", e);
@@ -62,15 +62,18 @@ pub async fn login(
     let username = &info.username;
     let password = &info.password;
 
-    let result = sqlx::query_as!(Member, "SELECT * FROM member WHERE username = $1", username)
-        .fetch_one(pool.get_ref())
-        .await;
+    let result = User::find_by_username(pool.get_ref(), username).await;
 
     match result {
-        Ok(member) => {
-            if verify(password, &member.password_hash).unwrap() {
-                session.insert("user_id", member.member_id).unwrap();
-                return HttpResponse::Ok().json("Logged in");
+        Ok(user) => {
+            if let Some(ref password_hash) = user.password_hash {
+                if verify(password, password_hash).unwrap() {
+                    session.insert("user_id", user.user_id).unwrap();
+                    session.insert("user_type", user.user_type.clone()).unwrap();
+                    return HttpResponse::Ok().json("Logged in");
+                } else {
+                    return HttpResponse::Unauthorized().json("Invalid credentials");
+                }
             } else {
                 return HttpResponse::Unauthorized().json("Invalid credentials");
             }

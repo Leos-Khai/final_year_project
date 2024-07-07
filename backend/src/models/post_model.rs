@@ -1,0 +1,97 @@
+use chrono::NaiveDate;
+use serde::{Deserialize, Serialize};
+use sqlx::{FromRow, PgPool, Result};
+
+#[derive(Serialize, Deserialize, FromRow, Debug)]
+pub struct Post {
+    pub post_id: i32,
+    pub post_title: String,
+    pub post_content: String,
+    pub post_date: Option<NaiveDate>,
+    pub like_count: Option<i32>,
+    pub view_count: Option<i32>,
+    pub author_type: String,
+    pub author_id: i32,
+}
+
+impl Post {
+    /// Create a new post
+    pub async fn create(pool: &PgPool, new_post: Post) -> Result<Self> {
+        let created_post = sqlx::query_as!(
+            Post,
+            r#"
+            INSERT INTO posts (post_title, post_content, post_date, like_count, view_count, author_type, author_id)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            RETURNING post_id, post_title, post_content, post_date, like_count, view_count, author_type, author_id
+            "#,
+            new_post.post_title,
+            new_post.post_content,
+            new_post.post_date,
+            new_post.like_count,
+            new_post.view_count,
+            new_post.author_type,
+            new_post.author_id
+        )
+        .fetch_one(pool)
+        .await?;
+
+        Ok(created_post)
+    }
+
+    /// Fetch a post by ID
+    pub async fn find_by_id(pool: &PgPool, post_id: i32) -> Result<Self> {
+        let post = sqlx::query_as!(
+            Post,
+            r#"
+            SELECT post_id, post_title, post_content, post_date, like_count, view_count, author_type, author_id
+            FROM posts
+            WHERE post_id = $1
+            "#,
+            post_id
+        )
+        .fetch_one(pool)
+        .await?;
+
+        Ok(post)
+    }
+
+    /// Update a post
+    pub async fn update(pool: &PgPool, post_id: i32, updated_post: Post) -> Result<Self> {
+        let post = sqlx::query_as!(
+            Post,
+            r#"
+            UPDATE posts
+            SET post_title = $1, post_content = $2, post_date = $3, like_count = $4, view_count = $5, author_type = $6, author_id = $7
+            WHERE post_id = $8
+            RETURNING post_id, post_title, post_content, post_date, like_count, view_count, author_type, author_id
+            "#,
+            updated_post.post_title,
+            updated_post.post_content,
+            updated_post.post_date,
+            updated_post.like_count,
+            updated_post.view_count,
+            updated_post.author_type,
+            updated_post.author_id,
+            post_id
+        )
+        .fetch_one(pool)
+        .await?;
+
+        Ok(post)
+    }
+
+    /// Delete a post
+    pub async fn delete(pool: &PgPool, post_id: i32) -> Result<u64> {
+        let rows_affected = sqlx::query!(
+            r#"
+            DELETE FROM posts WHERE post_id = $1
+            "#,
+            post_id
+        )
+        .execute(pool)
+        .await?
+        .rows_affected();
+
+        Ok(rows_affected)
+    }
+}
