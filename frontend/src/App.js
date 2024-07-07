@@ -1,16 +1,16 @@
 import React, { createContext, useContext, useState, useMemo } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import Login from './Login';
-import RegisterPage from './Registration';
+import Login from './components/Login';
+import RegisterPage from './components/Registration';
 import Register from './components/Register';
-import HomePage from './HomePage';
-import Logout from './Logout';
-import Post from './Post';
-import Friends from './Friends';
-import UserDetail from './UserDetail';
-import PostDetail from './PostDetail';
-import Header from './Header';
-import Footer from './Footer';
+import HomePage from './components/HomePage';
+import Logout from './components/Logout';
+import Post from './components/Post';
+import Friends from './components/Friends';
+import UserDetail from './components/UserDetail';
+import PostDetail from './components/PostDetail';
+import Header from './components/Header';
+import Footer from './components/Footer';
 import './App.css';
 
 export const UserContext = createContext({ user: null, setUser: () => { } });

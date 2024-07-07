@@ -70,19 +70,30 @@ pub async fn login(
                 if verify(password, password_hash).unwrap() {
                     session.insert("user_id", user.user_id).unwrap();
                     session.insert("user_type", user.user_type.clone()).unwrap();
-                    return HttpResponse::Ok().json("Logged in");
+                    println!("User logged in: {:?}", user); // Print user info on login
+                    return HttpResponse::Ok().json(user); // Return user info
                 } else {
+                    println!("Failed login attempt for username: {}", username);
                     return HttpResponse::Unauthorized().json("Invalid credentials");
                 }
             } else {
+                println!("Failed login attempt for username: {}", username);
                 return HttpResponse::Unauthorized().json("Invalid credentials");
             }
         }
-        Err(_) => return HttpResponse::Unauthorized().json("Invalid credentials"),
+        Err(_) => {
+            println!("Failed login attempt for username: {}", username);
+            return HttpResponse::Unauthorized().json("Invalid credentials");
+        }
     }
 }
 
 pub async fn logout(session: Session) -> impl Responder {
-    session.purge();
-    HttpResponse::Ok().json("Logged out")
+    if let Some(user_id) = session.get::<i32>("user_id").unwrap_or(None) {
+        println!("User logged out: user_id {}", user_id); // Print user info on logout
+        session.purge();
+        HttpResponse::Ok().json("Logged out")
+    } else {
+        HttpResponse::Unauthorized().json("No user logged in")
+    }
 }

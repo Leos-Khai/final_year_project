@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useUserContext } from './App'; // Adjust the import path according to your file structure
-import './HomePage.css'; // Import the CSS for styling
+import { useUserContext } from '../App'; // Adjust the import path according to your file structure
+import '../assets/styles/HomePage.css'; // Import the CSS for styling
 
 function HomePage() {
   const navigate = useNavigate();

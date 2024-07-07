@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Friends.css';
+import '../assets/styles/Friends.css';
 
 function Friends() {
   const navigate = useNavigate();

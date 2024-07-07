@@ -1,21 +1,27 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useUserContext } from './App';
+import { useUserContext } from '../App';
+import { logout as apiLogout } from '../services/api'; // Make sure the path is correct
 
 function Logout() {
   const { setUser } = useUserContext();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    setUser(null);
-    navigate('/login');
-  };
+  useEffect(() => {
+    const handleLogout = async () => {
+      try {
+        await apiLogout();
+        setUser(null);
+        navigate('/login');
+      } catch (error) {
+        console.error('Logout failed', error);
+      }
+    };
 
-  return (
-    <div>
-      {handleLogout()}
-    </div>
-  );
+    handleLogout();
+  }, [setUser, navigate]);
+
+  return <div>Logging out...</div>;
 }
 
 export default Logout;

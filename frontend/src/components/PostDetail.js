@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import './PostDetail.css';
+import '../assets/styles/PostDetail.css';
 
 function PostDetail() {
   const { state: post } = useLocation();

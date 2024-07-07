@@ -1,24 +1,30 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useUserContext } from './App'; // Make sure the path is correct
-import './Login.css';
+import { useUserContext } from '../App'; // Make sure the path is correct
+import { login } from '../services/api'; // Import the login function from api.js
+import '../assets/styles/Login.css';
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const { setUser } = useUserContext();
+  const [error, setError] = useState('');
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log('Login attempt:', username, password);
-    // Simulate authentication
-    if (username === 'user' && password === 'pass') {
-      setUser({
-        username: username,
-        fullname: 'John Doe'
-      });
-    } else {
-      alert('Invalid credentials');
+    try {
+      const response = await login(username, password);
+      if (response.status === 200) {
+        const user = response.data;
+        console.log('Logged in user:', user);
+        setUser(user); // Set user context with the logged-in user's info
+        alert('Login successful!', user);
+        navigator.clipboard.writeText(user);
+      } else {
+        setError('Invalid credentials');
+      }
+    } catch (err) {
+      setError('Invalid credentials');
     }
   };
 
@@ -26,6 +32,7 @@ function Login() {
     <div className="login-container">
       <form onSubmit={handleSubmit}>
         <h2>Log In</h2>
+        {error && <p style={{ color: 'red' }}>{error}</p>}
         <label>
           Username:
           <input type="text" value={username} onChange={e => setUsername(e.target.value)} required />

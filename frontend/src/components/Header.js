@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useUserContext } from './App';
-import './Header.css';
+import { useUserContext } from '../App';
+import '../assets/styles/Header.css';
 
 function Header() {
   const { user } = useUserContext();
