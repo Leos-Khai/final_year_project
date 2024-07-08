@@ -39,6 +39,20 @@ async fn main() -> std::io::Result<()> {
                     .route("/login", web::post().to(handlers::auth::login))
                     .route("/logout", web::post().to(handlers::auth::logout)),
             )
+            .service(
+                web::scope("/posts")
+                    .route("/", web::post().to(handlers::posts::create_post))
+                    .route("/{id}", web::get().to(handlers::posts::get_post_by_id))
+                    .route(
+                        "/user/{user_id}",
+                        web::get().to(handlers::posts::get_posts_by_user_id),
+                    )
+                    .route(
+                        "/friends",
+                        web::get().to(handlers::posts::get_posts_by_friends),
+                    )
+                    .route("/all", web::get().to(handlers::posts::get_all_posts)),
+            )
     })
     .bind("127.0.0.1:8080")?
     .run()
