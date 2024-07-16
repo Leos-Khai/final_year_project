@@ -21,14 +21,13 @@ impl Post {
             Post,
             r#"
             INSERT INTO posts (post_title, post_content, post_date, like_count, view_count, author_type, author_id)
-            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            VALUES ($1, $2, NOW(), $3, $4, $5, $6)
             RETURNING post_id, post_title, post_content, post_date, like_count, view_count, author_type, author_id
             "#,
             new_post.post_title,
             new_post.post_content,
-            new_post.post_date,
-            new_post.like_count,
-            new_post.view_count,
+            new_post.like_count.unwrap_or(0),
+            new_post.view_count.unwrap_or(0),
             new_post.author_type,
             new_post.author_id
         )

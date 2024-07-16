@@ -41,7 +41,7 @@ async fn main() -> std::io::Result<()> {
             )
             .service(
                 web::scope("/posts")
-                    .route("/", web::post().to(handlers::posts::create_post))
+                    .route("/create", web::post().to(handlers::posts::create_post))
                     .route("/{id}", web::get().to(handlers::posts::get_post_by_id))
                     .route(
                         "/user/{user_id}",

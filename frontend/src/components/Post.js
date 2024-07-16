@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { createPost } from '../services/api';
 import '../assets/styles/Post.css';
 
-function Post({ post }) {
+function Post() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
@@ -13,12 +14,23 @@ function Post({ post }) {
     setContent(e.target.value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle post submission logic here
-    // You can access the title and content using the state variables
-    console.log('Title:', title);
-    console.log('Content:', content);
+    const newPost = {
+      post_id: 0,
+      post_title: title,
+      post_content: content,
+      like_count: 0,
+      view_count: 0,
+      author_type: "member",
+      author_id: 0,
+    };
+    try {
+      const response = await createPost(newPost);
+      console.log('Post created:', response.data);
+    } catch (error) {
+      console.error('Error creating post:', error.response ? error.response.data : error.message);
+    }
   };
 
   return (
@@ -28,7 +40,7 @@ function Post({ post }) {
         <textarea className="textarea" value={content} onChange={handleContentChange} placeholder="Enter content" />
       </div>
       <button className="button" onClick={handleSubmit}>Submit</button>
-    </div >
+    </div>
   );
 }
 

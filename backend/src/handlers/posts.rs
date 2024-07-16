@@ -15,6 +15,9 @@ pub async fn create_post(
 
     let mut post = new_post.into_inner();
     post.author_id = user_id;
+    //post.author_type = user_type;
+
+    println!("Incoming post data: {:?}", post);
 
     match Post::create(pool.get_ref(), post).await {
         Ok(created_post) => HttpResponse::Ok().json(created_post),
@@ -90,15 +93,15 @@ pub async fn get_posts_by_friends(pool: web::Data<PgPool>, session: Session) -> 
 
 pub async fn get_all_posts(pool: web::Data<PgPool>) -> impl Responder {
     let result = sqlx::query_as!(
-        Post,
-        r#"
-        SELECT post_id, post_title, post_content, post_date, like_count, view_count, author_type, author_id
-        FROM posts
-        ORDER BY post_date DESC
-        "#
-    )
-    .fetch_all(pool.get_ref())
-    .await;
+      Post,
+      r#"
+      SELECT post_id, post_title, post_content, post_date, like_count, view_count, author_type, author_id
+      FROM posts
+      ORDER BY post_date DESC
+      "#
+  )
+  .fetch_all(pool.get_ref())
+  .await;
 
     match result {
         Ok(posts) => HttpResponse::Ok().json(posts),

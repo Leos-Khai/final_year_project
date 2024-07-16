@@ -20,7 +20,6 @@ CREATE TABLE admin (
     profile_pic VARCHAR(255)
 );
 
--- Creating the 'post' table
 CREATE TABLE posts (
     post_id SERIAL PRIMARY KEY,
     post_title VARCHAR(255) NOT NULL,
@@ -30,13 +29,32 @@ CREATE TABLE posts (
     view_count INTEGER DEFAULT 0,
     author_type VARCHAR(100) NOT NULL,
     author_id INTEGER NOT NULL,
-    FOREIGN KEY (author_id) REFERENCES member(member_id) ON DELETE SET NULL
-        DEFERRABLE INITIALLY DEFERRED,
-    FOREIGN KEY (author_id) REFERENCES admin(admin_id) ON DELETE SET NULL
-        DEFERRABLE INITIALLY DEFERRED
+    CHECK (author_type IN ('member', 'admin')),
+    FOREIGN KEY (author_id) REFERENCES member(member_id) ON DELETE SET NULL DEFERRABLE INITIALLY DEFERRED
 );
 
--- Creating the 'comments' table
+-- Trigger function to enforce the author_type constraint
+CREATE OR REPLACE FUNCTION enforce_author_type_posts()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.author_type = 'admin' THEN
+        IF NOT EXISTS (SELECT 1 FROM admin WHERE admin_id = NEW.author_id) THEN
+            RAISE EXCEPTION 'Invalid admin_id for author_type admin';
+        END IF;
+    ELSIF NEW.author_type = 'member' THEN
+        IF NOT EXISTS (SELECT 1 FROM member WHERE member_id = NEW.author_id) THEN
+            RAISE EXCEPTION 'Invalid member_id for author_type member';
+        END IF;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger to enforce the author_type constraint
+CREATE TRIGGER enforce_author_type_trigger_posts
+BEFORE INSERT OR UPDATE ON posts
+FOR EACH ROW EXECUTE FUNCTION enforce_author_type_posts();
+
 CREATE TABLE comments (
     comment_id SERIAL PRIMARY KEY,
     comment_content VARCHAR(255) NOT NULL,
@@ -44,12 +62,32 @@ CREATE TABLE comments (
     author_type VARCHAR(100) NOT NULL,
     author_id INTEGER NOT NULL,
     post_id INTEGER NOT NULL,
-    FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE,
-    FOREIGN KEY (author_id) REFERENCES member(member_id) ON DELETE SET NULL
-        DEFERRABLE INITIALLY DEFERRED,
-    FOREIGN KEY (author_id) REFERENCES admin(admin_id) ON DELETE SET NULL
-        DEFERRABLE INITIALLY DEFERRED
+    CHECK (author_type IN ('member', 'admin')),
+    FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE
 );
+
+-- Trigger function to enforce the author_type constraint
+CREATE OR REPLACE FUNCTION enforce_author_type_comments()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.author_type = 'admin' THEN
+        IF NOT EXISTS (SELECT 1 FROM admin WHERE admin_id = NEW.author_id) THEN
+            RAISE EXCEPTION 'Invalid admin_id for author_type admin';
+        END IF;
+    ELSIF NEW.author_type = 'member' THEN
+        IF NOT EXISTS (SELECT 1 FROM member WHERE member_id = NEW.author_id) THEN
+            RAISE EXCEPTION 'Invalid member_id for author_type member';
+        END IF;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger to enforce the author_type constraint
+CREATE TRIGGER enforce_author_type_trigger_comments
+BEFORE INSERT OR UPDATE ON comments
+FOR EACH ROW EXECUTE FUNCTION enforce_author_type_comments();
+
 
 -- Creating the 'friends' relationship table
 CREATE TABLE friends (

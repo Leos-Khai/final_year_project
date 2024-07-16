@@ -7,9 +7,10 @@ function PostDetail() {
 
   return (
     <div className="post-detail">
-      <h1>{post.title}</h1>
-      <p>{post.content}</p>
-      <div className="likes">Likes: {post.likes}</div>
+      <h1>{post.post_title}</h1>
+      <p>{post.post_content}</p>
+      <div className="likes">Likes: {post.like_count}</div>
+      <div className="views">Views: {post.view_count}</div>
     </div>
   );
 }

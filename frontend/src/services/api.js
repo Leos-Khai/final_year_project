@@ -19,6 +19,18 @@ export const logout = async () => {
   return axiosInstance.post('/auth/logout');
 };
 
-export const getProtected = async () => {
-  return axiosInstance.get('/protected');
+export const createPost = async (post) => {
+  return axiosInstance.post('/posts/create', post);
+};
+
+export const getPostsByUserId = async (userId) => {
+  return axiosInstance.get(`/posts/user/${userId}`);
+};
+
+export const getPostsByFriends = async () => {
+  return axiosInstance.get('/posts/friends');
+};
+
+export const getAllPosts = async () => {
+  return axiosInstance.get('/posts/all');
 };
