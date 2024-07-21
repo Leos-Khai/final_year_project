@@ -18,8 +18,6 @@ function Login() {
         const user = response.data;
         console.log('Logged in user:', user);
         setUser(user); // Set user context with the logged-in user's info
-        alert('Login successful!', user);
-        navigator.clipboard.writeText(user);
       } else {
         setError('Invalid credentials');
       }

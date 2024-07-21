@@ -23,6 +23,10 @@ export const createPost = async (post) => {
   return axiosInstance.post('/posts/create', post);
 };
 
+export const getPostById = async (postId) => {
+  return axiosInstance.get(`/posts/${postId}`);
+};
+
 export const getPostsByUserId = async (userId) => {
   return axiosInstance.get(`/posts/user/${userId}`);
 };
@@ -33,4 +37,12 @@ export const getPostsByFriends = async () => {
 
 export const getAllPosts = async () => {
   return axiosInstance.get('/posts/all');
+};
+
+export const updatePost = async (postId, post) => {
+  return axiosInstance.put(`/posts/${postId}`, post);
+};
+
+export const deletePost = async (postId) => {
+  return axiosInstance.delete(`/posts/${postId}`);
 };

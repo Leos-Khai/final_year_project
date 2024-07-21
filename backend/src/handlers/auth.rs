@@ -2,7 +2,7 @@ use crate::models::user_model::User;
 use actix_session::Session;
 use actix_web::{web, HttpResponse, Responder};
 use bcrypt::{hash, verify, DEFAULT_COST};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 
 #[derive(Deserialize, Debug)]
@@ -10,6 +10,13 @@ pub struct RegisterInput {
     pub username: String,
     pub email: String,
     pub password: String,
+}
+
+#[derive(Serialize)]
+pub struct UserResponse {
+    pub user_id: i32,
+    pub username: String,
+    pub user_type: String,
 }
 
 pub async fn register(pool: web::Data<PgPool>, info: web::Json<RegisterInput>) -> impl Responder {
@@ -71,7 +78,15 @@ pub async fn login(
                     session.insert("user_id", user.user_id).unwrap();
                     session.insert("user_type", user.user_type.clone()).unwrap();
                     println!("User logged in: {:?}", user); // Print user info on login
-                    return HttpResponse::Ok().json(user); // Return user info
+
+                    // Create a UserResponse instance
+                    let user_response = UserResponse {
+                        user_id: user.user_id.unwrap(),
+                        username: user.username.unwrap(),
+                        user_type: user.user_type.unwrap(),
+                    };
+
+                    return HttpResponse::Ok().json(user_response); // Return user info without password hash
                 } else {
                     println!("Failed login attempt for username: {}", username);
                     return HttpResponse::Unauthorized().json("Invalid credentials");

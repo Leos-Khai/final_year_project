@@ -4,13 +4,13 @@
   /* Dark background */
   color: #f4f4f4;
   /* Light color text */
-  padding: 100px 50px;
+  padding: 20px 50px;
   /* Padding for some breathing room */
   display: flex;
   /* Using flex to align navigation items */
   align-items: center;
   /* Align items vertically */
-  justify-content: flex-start;
+  justify-content: space-between;
   /* Space between logo and navigation */
 }
 

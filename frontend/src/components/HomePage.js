@@ -1,40 +1,49 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUserContext } from '../App'; // Adjust the import path according to your file structure
 import '../assets/styles/HomePage.css'; // Import the CSS for styling
+import { getAllPosts } from '../services/api'; // Import the API call
 
 function HomePage() {
   const navigate = useNavigate();
-  const [selectedPost, setSelectedPost] = React.useState(null);
+  const [posts, setPosts] = useState([]);
   const { user } = useUserContext(); // Access the user context
-  const posts = [
-    { id: 1, title: "Post One", content: "Here is the first post's content...", likes: 10 },
-    { id: 2, title: "Post Two", content: "Here is the second post's content...", likes: 20 },
-    { id: 3, title: "Post Three", content: "Here is the third post's content...", likes: 30 },
-    { id: 4, title: "Post Four", content: "Here is the fourth post's content...", likes: 40 },
-    { id: 5, title: "Post Five", content: "Here is the fifth post's content...", likes: 50 }
-  ];
+
+  // Fetch posts from API
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const response = await getAllPosts();
+        console.log("Fetched posts:", response.data); // Add this line to check the response
+        setPosts(response.data);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      }
+    };
+
+    fetchPosts();
+  }, []);
+
   const showPostDetail = (post) => {
-    setSelectedPost(post);
     navigate('/post-detail', { state: post });
-  }
+  };
 
   return (
     <div className="homepage">
-      {user ? <h1>Hi {user.fullname}</h1 > : <h1>Welcome</h1>
-      }
+      {user ? <h1>Hi {user.username}</h1> : <h1>Welcome</h1>}
       {posts.map(post => (
-        <div key={post.id} className="post">
-          <h2 onClick={() => showPostDetail(post)}>{post.title}</h2>
-          <p>{post.content}</p>
+        <div key={post.post_id} className="post">
+          <h2 onClick={() => showPostDetail(post)}>{post.post_title}</h2> {/* Use post_title */}
+          <p>{post.post_content}</p> {/* Use post_content */}
           <div className="actions">
-            <button>Like ({post.likes})</button>
+            <button>Like ({post.like_count})</button> {/* Use like_count */}
             <button>Comment</button>
             <button>Share</button>
           </div>
         </div>
       ))}
-    </div>);
+    </div>
+  );
 }
 
 export default HomePage;

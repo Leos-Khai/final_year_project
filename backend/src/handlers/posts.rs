@@ -111,3 +111,70 @@ pub async fn get_all_posts(pool: web::Data<PgPool>) -> impl Responder {
         }
     }
 }
+
+pub async fn update_post(
+    pool: web::Data<PgPool>,
+    session: Session,
+    post_id: web::Path<i32>,
+    updated_post: web::Json<Post>,
+) -> impl Responder {
+    let user_id: i32 = match session.get("user_id") {
+        Ok(Some(id)) => id,
+        _ => return HttpResponse::Unauthorized().json("Unauthorized"),
+    };
+
+    // Fetch the existing post to verify the author
+    let existing_post = match Post::find_by_id(pool.get_ref(), *post_id).await {
+        Ok(post) => post,
+        Err(e) => {
+            eprintln!("Error fetching post: {:?}", e);
+            return HttpResponse::InternalServerError().json("Error fetching post");
+        }
+    };
+
+    if existing_post.author_id != user_id {
+        return HttpResponse::Unauthorized().json("Unauthorized");
+    }
+
+    let updated_post = updated_post.into_inner();
+
+    match Post::update(pool.get_ref(), *post_id, updated_post).await {
+        Ok(post) => HttpResponse::Ok().json(post),
+        Err(e) => {
+            eprintln!("Error updating post: {:?}", e);
+            HttpResponse::InternalServerError().json("Error updating post")
+        }
+    }
+}
+
+pub async fn delete_post(
+    pool: web::Data<PgPool>,
+    session: Session,
+    post_id: web::Path<i32>,
+) -> impl Responder {
+    let user_id: i32 = match session.get("user_id") {
+        Ok(Some(id)) => id,
+        _ => return HttpResponse::Unauthorized().json("Unauthorized"),
+    };
+
+    // Fetch the existing post to verify the author
+    let existing_post = match Post::find_by_id(pool.get_ref(), *post_id).await {
+        Ok(post) => post,
+        Err(e) => {
+            eprintln!("Error fetching post: {:?}", e);
+            return HttpResponse::InternalServerError().json("Error fetching post");
+        }
+    };
+
+    if existing_post.author_id != user_id {
+        return HttpResponse::Unauthorized().json("Unauthorized");
+    }
+
+    match Post::delete(pool.get_ref(), *post_id).await {
+        Ok(_) => HttpResponse::Ok().json("Post deleted"),
+        Err(e) => {
+            eprintln!("Error deleting post: {:?}", e);
+            HttpResponse::InternalServerError().json("Error deleting post")
+        }
+    }
+}

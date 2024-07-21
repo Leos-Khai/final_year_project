@@ -41,8 +41,8 @@ async fn main() -> std::io::Result<()> {
             )
             .service(
                 web::scope("/posts")
+                    .route("/all", web::get().to(handlers::posts::get_all_posts))
                     .route("/create", web::post().to(handlers::posts::create_post))
-                    .route("/{id}", web::get().to(handlers::posts::get_post_by_id))
                     .route(
                         "/user/{user_id}",
                         web::get().to(handlers::posts::get_posts_by_user_id),
@@ -51,7 +51,9 @@ async fn main() -> std::io::Result<()> {
                         "/friends",
                         web::get().to(handlers::posts::get_posts_by_friends),
                     )
-                    .route("/all", web::get().to(handlers::posts::get_all_posts)),
+                    .route("/{id}", web::get().to(handlers::posts::get_post_by_id))
+                    .route("/{id}", web::put().to(handlers::posts::update_post))
+                    .route("/{id}", web::delete().to(handlers::posts::delete_post)),
             )
     })
     .bind("127.0.0.1:8080")?

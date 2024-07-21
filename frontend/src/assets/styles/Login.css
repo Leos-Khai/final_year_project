@@ -34,8 +34,8 @@
   /* Darker border for inputs */
   border-radius: 4px;
   box-sizing: border-box;
-  /*  background-color: #424242; 
-  color: #f4f4f4;*/
+  background-color: #424242;
+  color: #f4f4f4;
 }
 
 .login-container input[type="submit"] {

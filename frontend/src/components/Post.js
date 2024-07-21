@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate hook
 import { createPost } from '../services/api';
 import '../assets/styles/Post.css';
 
 function Post() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const navigate = useNavigate(); // Initialize useNavigate hook
 
   const handleTitleChange = (e) => {
     setTitle(e.target.value);
@@ -28,6 +30,7 @@ function Post() {
     try {
       const response = await createPost(newPost);
       console.log('Post created:', response.data);
+      navigate('/post-detail', { state: response.data }); // Use navigate hook to redirect
     } catch (error) {
       console.error('Error creating post:', error.response ? error.response.data : error.message);
     }
