@@ -10,7 +10,7 @@ const Register = () => {
   const handleRegister = async () => {
     try {
       await register(username, email, password);
-      alert('User registered');
+      // alert('User registered');
     } catch (error) {
       console.error('Error registering user:', error);
       setError(error.response?.data || 'Error registering user');

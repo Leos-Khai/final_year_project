@@ -14,6 +14,15 @@ My doom
    ```
 
 ### Backend
+1. ```sh
+cargo sqlx prepare
+```
+To create the database file.
+2. ```sh
+cargo run
+```
+to build and run the project.
+
 
 ### Database
 1. Start or stop the database:

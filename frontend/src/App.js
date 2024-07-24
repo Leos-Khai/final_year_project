@@ -38,7 +38,7 @@ function App() {
               <Route path="/post" element={user ? <Post /> : <Navigate to="/login" />} />
               <Route path="/friends" element={user ? <Friends /> : <Navigate to="/login" />} />
               <Route path="/user-detail" element={user ? <UserDetail /> : <Navigate to="/login" />} />
-              <Route path="/post-detail" element={user ? <PostDetail /> : <Navigate to="/login" />} />
+              <Route path="/post-detail/:id" element={user ? <PostDetail /> : <Navigate to="/login" />} />
               <Route path="/contact" element={<HomePage />} />
               <Route path="/about" element={<HomePage />} />
             </Routes>

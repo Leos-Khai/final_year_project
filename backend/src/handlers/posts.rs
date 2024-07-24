@@ -13,9 +13,14 @@ pub async fn create_post(
         _ => return HttpResponse::Unauthorized().json("Unauthorized"),
     };
 
+    let user_type: String = match session.get("user_type") {
+        Ok(Some(user_type)) => user_type,
+        _ => return HttpResponse::Unauthorized().json("Unauthorized"),
+    };
+
     let mut post = new_post.into_inner();
     post.author_id = user_id;
-    //post.author_type = user_type;
+    post.author_type = user_type;
 
     println!("Incoming post data: {:?}", post);
 

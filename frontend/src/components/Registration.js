@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../assets/styles/Registration.css';
+import { register } from '../services/api';
 
 function RegistrationPage() {
   const [formData, setFormData] = useState({
@@ -8,6 +9,13 @@ function RegistrationPage() {
     password: '',
     confirmPassword: ''
   });
+  const [error, setError] = useState(null);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+
+  useEffect(() => {
+    const { password, confirmPassword } = formData;
+    setIsButtonDisabled(password !== confirmPassword || !password || !confirmPassword);
+  }, [formData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -17,13 +25,19 @@ function RegistrationPage() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
       alert("Passwords do not match!");
       return;
     }
-    console.log('User Registered:', formData); // Normally, you'd send this to the server
+    try {
+      await register(formData.username, formData.email, formData.password);
+      alert('User registered');
+    } catch (error) {
+      console.error('Error registering user:', error);
+      setError(error.response?.data || 'Error registering user');
+    }
   };
 
   return (
@@ -65,7 +79,8 @@ function RegistrationPage() {
         onChange={handleChange}
       />
 
-      <button type="submit">Register</button>
+      <button type="submit" disabled={isButtonDisabled}>Register</button>
+      {error && <div style={{ color: 'red' }}>{error}</div>}
     </form>
   );
 }
