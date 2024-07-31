@@ -94,4 +94,36 @@ impl Post {
 
         Ok(rows_affected)
     }
+
+    // like post
+    pub async fn like_post(pool: &PgPool, user_id: i32, post_id: i32) -> Result<Self> {
+        // Insert a new like record
+        sqlx::query!(
+            r#"
+          INSERT INTO post_likes (user_id, post_id)
+          VALUES ($1, $2)
+          ON CONFLICT DO NOTHING
+          "#,
+            user_id,
+            post_id
+        )
+        .execute(pool)
+        .await?;
+
+        // Update the like count in the post table
+        let post = sqlx::query_as!(
+          Post,
+          r#"
+          UPDATE posts
+          SET like_count = like_count + 1
+          WHERE post_id = $1
+          RETURNING post_id, post_title, post_content, post_date, like_count, view_count, author_type, author_id
+          "#,
+          post_id
+      )
+      .fetch_one(pool)
+      .await?;
+
+        Ok(post)
+    }
 }

@@ -110,12 +110,20 @@ CREATE TABLE block (
     CHECK (blocker_id <> blocked_id)  -- Ensure a user cannot block themselves
 );
 
-CREATE TABLE likes (
+CREATE TABLE post_likes (
     user_id INTEGER,
     post_id INTEGER,
     PRIMARY KEY (user_id, post_id),
     FOREIGN KEY (user_id) REFERENCES member(member_id) ON DELETE CASCADE,
     FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE
+);
+
+CREATE TABLE comment_likes (
+    user_id INTEGER,
+    comment_id INTEGER,
+    PRIMARY KEY (user_id, comment_id),
+    FOREIGN KEY (user_id) REFERENCES member(member_id) ON DELETE CASCADE,
+    FOREIGN KEY (comment_id) REFERENCES comments(comment_id) ON DELETE CASCADE
 );
 
 -- Creating the 'user_authentication' view

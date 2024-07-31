@@ -183,3 +183,22 @@ pub async fn delete_post(
         }
     }
 }
+
+pub async fn like_post(
+    pool: web::Data<PgPool>,
+    session: Session,
+    post_id: web::Path<i32>,
+) -> impl Responder {
+    let user_id: i32 = match session.get("user_id") {
+        Ok(Some(id)) => id,
+        _ => return HttpResponse::Unauthorized().json("Unauthorized"),
+    };
+
+    match Post::like_post(pool.get_ref(), user_id, *post_id).await {
+        Ok(updated_post) => HttpResponse::Ok().json(updated_post),
+        Err(e) => {
+            eprintln!("Error liking post: {:?}", e);
+            HttpResponse::InternalServerError().json("Error liking post")
+        }
+    }
+}

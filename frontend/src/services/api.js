@@ -46,3 +46,7 @@ export const updatePost = async (postId, post) => {
 export const deletePost = async (postId) => {
   return axiosInstance.delete(`/posts/${postId}`);
 };
+
+export const likePost = async (postId) => {
+  return axiosInstance.post(`/posts/like/${postId}`);
+};
