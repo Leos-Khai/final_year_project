@@ -25,7 +25,7 @@ function HomePage() {
   }, []);
 
   const showPostDetail = (post) => {
-    navigate('/post-detail', { state: post });
+    navigate(`/post-detail/${post.post_id}`);
   };
 
   return (

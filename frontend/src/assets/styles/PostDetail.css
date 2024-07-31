@@ -1,3 +1,11 @@
+.post-detail-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  width: 100%;
+}
+
 .post-detail {
   width: 80%;
   max-width: 700px;
@@ -13,12 +21,72 @@
   font-size: 2em;
 }
 
+.post-detail .views {
+  font-size: 1em;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
 .post-detail p {
   font-size: 1.2em;
   line-height: 1.6;
 }
 
-.likes {
+.likes-button {
   margin-top: 10px;
+  padding: 10px 20px;
+  font-size: 1em;
   font-weight: bold;
+  color: #333;
+  background-color: #f4f4f4;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.likes-button:hover {
+  background-color: #e0e0e0;
+}
+
+.author-actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.update-button,
+.delete-button {
+  padding: 10px 20px;
+  font-size: 1em;
+  font-weight: bold;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.update-button {
+  background-color: #007BFF;
+}
+
+.update-button:hover {
+  background-color: #0056b3;
+}
+
+.delete-button {
+  background-color: #dc3545;
+}
+
+.delete-button:hover {
+  background-color: #c82333;
+}
+
+.loading,
+.error,
+.no-post {
+  text-align: center;
+  color: #f4f4f4;
+  font-size: 1.2em;
 }

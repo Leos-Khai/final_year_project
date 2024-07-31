@@ -13,9 +13,14 @@ pub async fn create_post(
         _ => return HttpResponse::Unauthorized().json("Unauthorized"),
     };
 
+    let user_type: String = match session.get("user_type") {
+        Ok(Some(user_type)) => user_type,
+        _ => return HttpResponse::Unauthorized().json("Unauthorized"),
+    };
+
     let mut post = new_post.into_inner();
     post.author_id = user_id;
-    //post.author_type = user_type;
+    post.author_type = user_type;
 
     println!("Incoming post data: {:?}", post);
 
@@ -175,6 +180,25 @@ pub async fn delete_post(
         Err(e) => {
             eprintln!("Error deleting post: {:?}", e);
             HttpResponse::InternalServerError().json("Error deleting post")
+        }
+    }
+}
+
+pub async fn like_post(
+    pool: web::Data<PgPool>,
+    session: Session,
+    post_id: web::Path<i32>,
+) -> impl Responder {
+    let user_id: i32 = match session.get("user_id") {
+        Ok(Some(id)) => id,
+        _ => return HttpResponse::Unauthorized().json("Unauthorized"),
+    };
+
+    match Post::like_post(pool.get_ref(), user_id, *post_id).await {
+        Ok(updated_post) => HttpResponse::Ok().json(updated_post),
+        Err(e) => {
+            eprintln!("Error liking post: {:?}", e);
+            HttpResponse::InternalServerError().json("Error liking post")
         }
     }
 }

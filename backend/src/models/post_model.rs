@@ -1,4 +1,4 @@
-use chrono::NaiveDate;
+use chrono::{NaiveDateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, PgPool, Result};
 
@@ -7,7 +7,7 @@ pub struct Post {
     pub post_id: i32,
     pub post_title: String,
     pub post_content: String,
-    pub post_date: Option<NaiveDate>,
+    pub post_date: Option<NaiveDateTime>,
     pub like_count: Option<i32>,
     pub view_count: Option<i32>,
     pub author_type: String,
@@ -21,11 +21,12 @@ impl Post {
             Post,
             r#"
             INSERT INTO posts (post_title, post_content, post_date, like_count, view_count, author_type, author_id)
-            VALUES ($1, $2, NOW(), $3, $4, $5, $6)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
             RETURNING post_id, post_title, post_content, post_date, like_count, view_count, author_type, author_id
             "#,
             new_post.post_title,
             new_post.post_content,
+            Some(Utc::now().naive_utc()), // Using chrono's Utc::now() for post_date
             new_post.like_count.unwrap_or(0),
             new_post.view_count.unwrap_or(0),
             new_post.author_type,
@@ -92,5 +93,37 @@ impl Post {
         .rows_affected();
 
         Ok(rows_affected)
+    }
+
+    // like post
+    pub async fn like_post(pool: &PgPool, user_id: i32, post_id: i32) -> Result<Self> {
+        // Insert a new like record
+        sqlx::query!(
+            r#"
+          INSERT INTO post_likes (user_id, post_id)
+          VALUES ($1, $2)
+          ON CONFLICT DO NOTHING
+          "#,
+            user_id,
+            post_id
+        )
+        .execute(pool)
+        .await?;
+
+        // Update the like count in the post table
+        let post = sqlx::query_as!(
+          Post,
+          r#"
+          UPDATE posts
+          SET like_count = like_count + 1
+          WHERE post_id = $1
+          RETURNING post_id, post_title, post_content, post_date, like_count, view_count, author_type, author_id
+          "#,
+          post_id
+      )
+      .fetch_one(pool)
+      .await?;
+
+        Ok(post)
     }
 }

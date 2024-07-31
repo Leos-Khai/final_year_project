@@ -24,7 +24,7 @@ CREATE TABLE posts (
     post_id SERIAL PRIMARY KEY,
     post_title VARCHAR(255) NOT NULL,
     post_content TEXT NOT NULL,
-    post_date DATE DEFAULT CURRENT_DATE,
+    post_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     like_count INTEGER DEFAULT 0,
     view_count INTEGER DEFAULT 0,
     author_type VARCHAR(100) NOT NULL,
@@ -58,7 +58,7 @@ FOR EACH ROW EXECUTE FUNCTION enforce_author_type_posts();
 CREATE TABLE comments (
     comment_id SERIAL PRIMARY KEY,
     comment_content VARCHAR(255) NOT NULL,
-    comment_date DATE DEFAULT CURRENT_DATE,
+    comment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     author_type VARCHAR(100) NOT NULL,
     author_id INTEGER NOT NULL,
     post_id INTEGER NOT NULL,
@@ -108,6 +108,22 @@ CREATE TABLE block (
     FOREIGN KEY (blocker_id) REFERENCES member(member_id) ON DELETE CASCADE,
     FOREIGN KEY (blocked_id) REFERENCES member(member_id) ON DELETE CASCADE,
     CHECK (blocker_id <> blocked_id)  -- Ensure a user cannot block themselves
+);
+
+CREATE TABLE post_likes (
+    user_id INTEGER,
+    post_id INTEGER,
+    PRIMARY KEY (user_id, post_id),
+    FOREIGN KEY (user_id) REFERENCES member(member_id) ON DELETE CASCADE,
+    FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE
+);
+
+CREATE TABLE comment_likes (
+    user_id INTEGER,
+    comment_id INTEGER,
+    PRIMARY KEY (user_id, comment_id),
+    FOREIGN KEY (user_id) REFERENCES member(member_id) ON DELETE CASCADE,
+    FOREIGN KEY (comment_id) REFERENCES comments(comment_id) ON DELETE CASCADE
 );
 
 -- Creating the 'user_authentication' view

@@ -41,18 +41,27 @@ async fn main() -> std::io::Result<()> {
             )
             .service(
                 web::scope("/posts")
+                    // get all post
                     .route("/all", web::get().to(handlers::posts::get_all_posts))
+                    // create post
                     .route("/create", web::post().to(handlers::posts::create_post))
+                    // get post by user
                     .route(
                         "/user/{user_id}",
                         web::get().to(handlers::posts::get_posts_by_user_id),
                     )
+                    // get post by friends
                     .route(
                         "/friends",
                         web::get().to(handlers::posts::get_posts_by_friends),
                     )
+                    // like a post
+                    .route("/like/{id}", web::post().to(handlers::posts::like_post))
+                    // get post by id
                     .route("/{id}", web::get().to(handlers::posts::get_post_by_id))
+                    // update post by id
                     .route("/{id}", web::put().to(handlers::posts::update_post))
+                    // delete post by id
                     .route("/{id}", web::delete().to(handlers::posts::delete_post)),
             )
     })
