@@ -1,3 +1,4 @@
+use crate::fake_news_detector::FakeNewsDetector;
 use crate::models::post_model::Post;
 use actix_session::Session;
 use actix_web::{web, HttpResponse, Responder};
@@ -34,6 +35,14 @@ pub async fn create_post(
 }
 
 pub async fn get_post_by_id(pool: web::Data<PgPool>, post_id: web::Path<i32>) -> impl Responder {
+    match Post::increment_view_count(pool.get_ref(), *post_id).await {
+        Ok(_) => {}
+        Err(e) => {
+            eprintln!("Error incrementing view count: {:?}", e);
+            return HttpResponse::InternalServerError().json("Error incrementing view count");
+        }
+    }
+
     match Post::find_by_id(pool.get_ref(), *post_id).await {
         Ok(post) => HttpResponse::Ok().json(post),
         Err(e) => {
@@ -199,6 +208,43 @@ pub async fn like_post(
         Err(e) => {
             eprintln!("Error liking post: {:?}", e);
             HttpResponse::InternalServerError().json("Error liking post")
+        }
+    }
+}
+
+pub async fn check_post_validity(
+    pool: web::Data<PgPool>,
+    post_id: web::Path<i32>,
+) -> impl Responder {
+    // Fetch the post by ID
+    let post = match Post::find_by_id(pool.get_ref(), *post_id).await {
+        Ok(post) => post,
+        Err(e) => {
+            eprintln!("Error fetching post: {:?}", e);
+            return HttpResponse::InternalServerError().json("Error fetching post");
+        }
+    };
+
+    // Initialize the fake news detector
+    let mut detector = match FakeNewsDetector::new("bert_fake_news_detector.onnx", "tokenizer.json")
+    {
+        Ok(detector) => detector,
+        Err(e) => {
+            eprintln!("Error initializing fake news detector: {:?}", e);
+            return HttpResponse::InternalServerError()
+                .json("Error initializing fake news detector");
+        }
+    };
+
+    // Validate the post for fake news
+    match detector.validate_post(&post) {
+        Ok(result) => {
+            println!("Fake news detection result: {}", result);
+            HttpResponse::Ok().json(result)
+        }
+        Err(e) => {
+            eprintln!("Error detecting fake news: {:?}", e);
+            HttpResponse::InternalServerError().json("Error detecting fake news")
         }
     }
 }

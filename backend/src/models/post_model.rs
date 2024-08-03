@@ -126,4 +126,19 @@ impl Post {
 
         Ok(post)
     }
+
+    pub async fn increment_view_count(pool: &PgPool, post_id: i32) -> Result<()> {
+        sqlx::query!(
+            r#"
+          UPDATE posts
+          SET view_count = view_count + 1
+          WHERE post_id = $1
+          "#,
+            post_id
+        )
+        .execute(pool)
+        .await?;
+
+        Ok(())
+    }
 }

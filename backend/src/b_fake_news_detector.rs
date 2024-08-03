@@ -1,4 +1,4 @@
-use crate::models::post_model::Post;
+use crate::post::Post;
 use onnxruntime::environment::Environment;
 use onnxruntime::ndarray::Array2;
 use onnxruntime::session::Session;
@@ -51,7 +51,7 @@ impl FakeNewsDetector {
     }
 
     pub fn validate_post(&mut self, post: &Post) -> Result<String, Box<dyn Error + Send + Sync>> {
-        let encoding = self.tokenizer.encode(post.post_content.as_str(), true)?;
+        let encoding = self.tokenizer.encode(post.text.as_str(), true)?;
 
         // Convert input IDs and attention mask to vectors
         let input_ids: Vec<i64> = encoding.get_ids().iter().map(|&id| id as i64).collect();

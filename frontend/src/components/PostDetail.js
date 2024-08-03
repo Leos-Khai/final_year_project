@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import '../assets/styles/PostDetail.css';
-import { getPostById } from '../services/api';
+import { getPostById, checkPostValidity, deletePost } from '../services/api';
 import { useUserContext } from '../App'; // Adjust the import path according to your file structure
 
 function PostDetail() {
@@ -11,6 +11,7 @@ function PostDetail() {
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [validity, setValidity] = useState(null);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -32,8 +33,24 @@ function PostDetail() {
     navigate(`/update-post/${id}`);
   };
 
-  const handleDelete = () => {
-    // Add delete functionality here
+  const handleDelete = async () => {
+    try {
+      await deletePost(id);
+      navigate('/');
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      setError('Error deleting post');
+    }
+  };
+
+  const handleCheckValidity = async () => {
+    try {
+      const response = await checkPostValidity(id);
+      setValidity(response.data);
+    } catch (error) {
+      console.error('Error checking post validity:', error);
+      setError('Error checking post validity');
+    }
   };
 
   if (loading) {
@@ -61,6 +78,8 @@ function PostDetail() {
             <button className="delete-button" onClick={handleDelete}>Delete</button>
           </div>
         )}
+        <button className="validity-button" onClick={handleCheckValidity}>Check Post Validity</button>
+        {validity && <div className="validity-result">Validity: {validity}</div>}
       </div>
     </div>
   );

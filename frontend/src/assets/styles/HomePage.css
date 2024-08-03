@@ -19,11 +19,21 @@
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   /* Stronger shadow for depth */
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.post:hover {
+  background-color: #383838;
+  /* Darker background on hover */
+  transform: translateY(-5px);
+  /* Slight lift effect on hover */
 }
 
 .post h2 {
   color: #f4f4f4;
   /* Light text for the title */
+  margin-bottom: 10px;
 }
 
 .post p {
@@ -31,27 +41,11 @@
   /* Light text for the content for better contrast */
 }
 
-.actions {
-  margin-top: 10px;
+.meta {
   display: flex;
-  justify-content: space-around;
-}
-
-.actions button {
-  padding: 10px 20px;
-  color: #333;
-  /* Dark text on light buttons */
-  background-color: #e0e0e0;
-  /* Light gray background for buttons */
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s, color 0.3s;
-}
-
-.actions button:hover {
-  background-color: #bdbdbd;
-  /* Darker shade on hover for buttons */
-  color: #222;
-  /* Darker text on hover */
+  justify-content: space-between;
+  margin-top: 10px;
+  font-size: 0.9em;
+  color: #ccc;
+  /* Lighter color for metadata */
 }

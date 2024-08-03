@@ -32,13 +32,12 @@ function HomePage() {
     <div className="homepage">
       {user ? <h1>Hi {user.username}</h1> : <h1>Welcome</h1>}
       {posts.map(post => (
-        <div key={post.post_id} className="post">
-          <h2 onClick={() => showPostDetail(post)}>{post.post_title}</h2> {/* Use post_title */}
+        <div key={post.post_id} className="post" onClick={() => showPostDetail(post)}>
+          <h2>{post.post_title}</h2> {/* Use post_title */}
           <p>{post.post_content}</p> {/* Use post_content */}
-          <div className="actions">
-            <button>Like ({post.like_count})</button> {/* Use like_count */}
-            <button>Comment</button>
-            <button>Share</button>
+          <div className="meta">
+            <span>Likes: {post.like_count}</span>
+            <span>Views: {post.view_count}</span>
           </div>
         </div>
       ))}

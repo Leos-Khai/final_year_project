@@ -50,3 +50,7 @@ export const deletePost = async (postId) => {
 export const likePost = async (postId) => {
   return axiosInstance.post(`/posts/like/${postId}`);
 };
+
+export const checkPostValidity = async (postId) => {
+  return axiosInstance.get(`/posts/check-validity/${postId}`);
+};
