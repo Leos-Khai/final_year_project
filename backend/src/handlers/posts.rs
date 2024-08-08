@@ -238,9 +238,16 @@ pub async fn check_post_validity(
 
     // Validate the post for fake news
     match detector.validate_post(&post) {
-        Ok(result) => {
-            println!("Fake news detection result: {}", result);
-            HttpResponse::Ok().json(result)
+        Ok((result, fake_prob, real_prob)) => {
+            println!(
+                "Fake news detection result: {}, Fake: {}, Real: {}",
+                result, fake_prob, real_prob
+            );
+            HttpResponse::Ok().json(serde_json::json!({
+                "result": result,
+                "fake_probability": fake_prob,
+                "real_probability": real_prob
+            }))
         }
         Err(e) => {
             eprintln!("Error detecting fake news: {:?}", e);

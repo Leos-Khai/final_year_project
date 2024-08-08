@@ -37,7 +37,9 @@ impl PasswordResetToken {
 
     /// Fetch a reset token by token value
     pub async fn find_by_token(pool: &PgPool, token: &str) -> Result<Self> {
-        let token = sqlx::query_as!(
+        println!("Token {}", token);
+
+        let r_token = sqlx::query_as!(
             PasswordResetToken,
             r#"
             SELECT token_id, user_id, reset_token, reset_token_expires
@@ -48,8 +50,8 @@ impl PasswordResetToken {
         )
         .fetch_one(pool)
         .await?;
-
-        Ok(token)
+        println!("R_Token: {:?}", r_token);
+        Ok(r_token)
     }
 
     /// Delete a reset token by user ID

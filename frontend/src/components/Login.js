@@ -48,6 +48,7 @@ function Login() {
           required
         />
         <p>Don't have an account? You can <Link to="/register">register here</Link>.</p>
+        <p>Forgot your password? <Link to="/forgot-password">Reset it here</Link>.</p>
         <button type="submit">Login</button>
       </form>
     </div>

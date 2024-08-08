@@ -12,6 +12,7 @@ function PostDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [validity, setValidity] = useState(null);
+  const [showModal, setShowModal] = useState(false); // State for controlling the modal
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -47,10 +48,15 @@ function PostDetail() {
     try {
       const response = await checkPostValidity(id);
       setValidity(response.data);
+      setShowModal(true); // Show the modal with the validity results
     } catch (error) {
       console.error('Error checking post validity:', error);
       setError('Error checking post validity');
     }
+  };
+
+  const closeModal = () => {
+    setShowModal(false); // Hide the modal
   };
 
   if (loading) {
@@ -79,8 +85,20 @@ function PostDetail() {
           </div>
         )}
         <button className="validity-button" onClick={handleCheckValidity}>Check Post Validity</button>
-        {validity && <div className="validity-result">Validity: {validity}</div>}
       </div>
+
+      {/* Modal for displaying validity results */}
+      {showModal && (
+        <div className="modal" style={{ display: 'block' }}>
+          <div className="modal-content">
+            <span className="close" onClick={closeModal}>&times;</span>
+            <h2>Post Validity Result</h2>
+            <p>Validity: {validity.result}</p>
+            <p>Fake News Probability: {validity.fake_probability}%</p>
+            <p>Real News Probability: {validity.real_probability}%</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

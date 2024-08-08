@@ -50,7 +50,10 @@ impl FakeNewsDetector {
         })
     }
 
-    pub fn validate_post(&mut self, post: &Post) -> Result<String, Box<dyn Error + Send + Sync>> {
+    pub fn validate_post(
+        &mut self,
+        post: &Post,
+    ) -> Result<(String, f32, f32), Box<dyn Error + Send + Sync>> {
         let encoding = self.tokenizer.encode(post.post_content.as_str(), true)?;
 
         // Convert input IDs and attention mask to vectors
@@ -87,14 +90,14 @@ impl FakeNewsDetector {
         let probabilities = softmax(output_array);
         println!("Probabilities: {:?}", probabilities);
 
-        // Determine the predicted class
-        let predicted_class = if probabilities[0] > probabilities[1] {
-            "Real News"
+        // Determine the predicted class and probabilities
+        let (predicted_class, fake_prob, real_prob) = if probabilities[0] > probabilities[1] {
+            ("Real News".to_string(), probabilities[1], probabilities[0])
         } else {
-            "Fake News"
+            ("Fake News".to_string(), probabilities[0], probabilities[1])
         };
 
-        Ok(predicted_class.to_string())
+        Ok((predicted_class, fake_prob, real_prob))
     }
 }
 

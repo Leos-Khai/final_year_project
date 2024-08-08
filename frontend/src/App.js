@@ -2,6 +2,8 @@ import React, { createContext, useContext, useState, useMemo } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Login from './components/Login';
 import RegisterPage from './components/Registration';
+import ForgotPassword from './components/ForgotPassword';
+import ResetPassword from './components/ResetPassword';
 import HomePage from './components/HomePage';
 import Logout from './components/Logout';
 import Post from './components/Post';
@@ -31,6 +33,8 @@ function App() {
             <Routes>
               <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
               <Route path="/register" element={!user ? <RegisterPage /> : <Navigate to="/" />} />
+              <Route path="/forgot-password" element={!user ? <ForgotPassword /> : <Navigate to="/" />} />
+              <Route path="/reset-password/:token" element={<ResetPassword />} />
               <Route path="/" element={user ? <HomePage /> : <Navigate to="/login" />} />
               <Route path="/logout" element={<Logout />} />
               <Route path="/post" element={user ? <Post /> : <Navigate to="/login" />} />

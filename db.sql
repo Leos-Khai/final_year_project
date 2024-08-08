@@ -3,7 +3,7 @@ CREATE TABLE member (
     member_id SERIAL PRIMARY KEY,
     username VARCHAR(255) UNIQUE NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,  -- Assuming hash storage for password
+    password_hash VARCHAR(255) NOT NULL,
     full_name VARCHAR(255),
     phone_number VARCHAR(20),
     profile_pic VARCHAR(255)

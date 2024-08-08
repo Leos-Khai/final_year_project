@@ -1,4 +1,5 @@
 use dotenv::dotenv;
+use lettre::message::header::ContentType;
 use lettre::transport::smtp::authentication::Credentials;
 use lettre::{Message, SmtpTransport, Transport};
 use std::env;
@@ -10,15 +11,31 @@ pub fn send_reset_email(to: &str, token: &str) {
     let email_password = env::var("EMAIL_PASSWORD").expect("EMAIL_PASSWORD must be set");
     let smtp_server = env::var("SMTP_SERVER").expect("SMTP_SERVER must be set");
 
+    // HTML body
+    let html_body = format!(
+        r#"
+        <html>
+        <head>
+            <title>Password Reset</title>
+        </head>
+        <body>
+            <p>Click the link below to reset your password:</p>
+            <p><a href="http://localhost:3000/reset-password/{}">Reset Password</a></p>
+            <p>Copy the link and paste it in your browser.</p>
+            <p>http://localhost:3000/reset-password/{}</p>
+        </body>
+        </html>
+        "#,
+        token, token
+    );
+
     // Create the email
     let email = Message::builder()
         .from(email_username.parse().unwrap())
         .to(to.parse().unwrap())
         .subject("Password Reset")
-        .body(format!(
-            "Click the link to reset your password: https://yourapp.com/reset-password?token={}",
-            token
-        ))
+        .header(ContentType::TEXT_HTML)
+        .body(html_body)
         .unwrap();
 
     // Configure the SMTP client

@@ -30,6 +30,16 @@ pub async fn register(pool: web::Data<PgPool>, info: web::Json<RegisterInput>) -
     let email = &info.email;
     let password = &info.password;
 
+    // Check if the username already exists
+    if let Ok(_) = User::find_by_username(pool.get_ref(), username).await {
+        return HttpResponse::BadRequest().json("Username already exists");
+    }
+
+    // Check if the email already exists
+    if let Ok(_) = User::find_by_email(pool.get_ref(), email).await {
+        return HttpResponse::BadRequest().json("Email already exists");
+    }
+
     // Hash the password
     let password_hash = match hash(password, DEFAULT_COST) {
         Ok(hash) => hash,
@@ -122,7 +132,7 @@ pub struct ResetEmailInput {
     pub email: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct ResetPasswordInput {
     pub token: String,
     pub new_password: String,
@@ -155,9 +165,18 @@ pub async fn reset_password(
     let token = &info.token;
     let new_password = &info.new_password;
 
+    // Log the received data
+    println!("Received reset password request: {:?}", info);
+
+    // Validate input data
+    if token.is_empty() || new_password.is_empty() {
+        return HttpResponse::BadRequest().json("Token and new password cannot be empty");
+    }
+
     match PasswordResetToken::find_by_token(pool.get_ref(), token).await {
         Ok(reset_token) => {
             if Utc::now().naive_utc() > reset_token.reset_token_expires {
+                println!("Expire");
                 return HttpResponse::BadRequest().json("Token has expired");
             }
 

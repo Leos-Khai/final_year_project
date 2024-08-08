@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import '../assets/styles/Registration.css';
 import { register } from '../services/api';
 
@@ -10,7 +11,9 @@ function RegistrationPage() {
     confirmPassword: ''
   });
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const { password, confirmPassword } = formData;
@@ -28,12 +31,15 @@ function RegistrationPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
+      setError("Passwords do not match!");
       return;
     }
     try {
       await register(formData.username, formData.email, formData.password);
-      alert('User registered');
+      setSuccess('User registered successfully. Redirecting to login...');
+      setTimeout(() => {
+        navigate('/login');
+      }, 5000);
     } catch (error) {
       console.error('Error registering user:', error);
       setError(error.response?.data || 'Error registering user');
@@ -46,6 +52,7 @@ function RegistrationPage() {
       <label htmlFor="username">Username:</label>
       <input
         type="text"
+        required
         id="username"
         name="username"
         value={formData.username}
@@ -54,6 +61,7 @@ function RegistrationPage() {
 
       <label htmlFor="email">Email:</label>
       <input
+        required
         type="email"
         id="email"
         name="email"
@@ -81,6 +89,8 @@ function RegistrationPage() {
 
       <button type="submit" disabled={isButtonDisabled}>Register</button>
       {error && <div style={{ color: 'red' }}>{error}</div>}
+      {success && <div style={{ color: 'green' }}>{success}</div>}
+      <p>Already have an account? <Link to="/login">Login here</Link>.</p>
     </form>
   );
 }

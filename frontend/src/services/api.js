@@ -60,5 +60,5 @@ export const requestPasswordReset = async (email) => {
 };
 
 export const resetPassword = async (token, newPassword) => {
-  return axiosInstance.post('/auth/reset-password', { token, newPassword });
+  return axiosInstance.post('/auth/reset-password', { token, new_password: newPassword });
 };
