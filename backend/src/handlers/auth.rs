@@ -1,9 +1,13 @@
+use crate::email::send_reset_email;
+use crate::models::password_reset_token_model::PasswordResetToken;
 use crate::models::user_model::User;
 use actix_session::Session;
 use actix_web::{web, HttpResponse, Responder};
 use bcrypt::{hash, verify, DEFAULT_COST};
+use chrono::{Duration, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
+use uuid::Uuid;
 
 #[derive(Deserialize, Debug)]
 pub struct RegisterInput {
@@ -110,5 +114,62 @@ pub async fn logout(session: Session) -> impl Responder {
         HttpResponse::Ok().json("Logged out")
     } else {
         HttpResponse::Unauthorized().json("No user logged in")
+    }
+}
+
+#[derive(Deserialize)]
+pub struct ResetEmailInput {
+    pub email: String,
+}
+
+#[derive(Deserialize)]
+pub struct ResetPasswordInput {
+    pub token: String,
+    pub new_password: String,
+}
+
+pub async fn request_password_reset(
+    pool: web::Data<PgPool>,
+    info: web::Json<ResetEmailInput>,
+) -> impl Responder {
+    let email = &info.email;
+
+    match User::find_by_email(pool.get_ref(), email).await {
+        Ok(user) => {
+            let token = Uuid::new_v4().to_string();
+            let expires = (Utc::now() + Duration::hours(1)).naive_utc();
+            PasswordResetToken::create(pool.get_ref(), user.user_id.unwrap(), &token, expires)
+                .await
+                .unwrap();
+            send_reset_email(email, &token);
+            HttpResponse::Ok().json("Password reset email sent")
+        }
+        Err(_) => HttpResponse::NotFound().json("Email not found"),
+    }
+}
+
+pub async fn reset_password(
+    pool: web::Data<PgPool>,
+    info: web::Json<ResetPasswordInput>,
+) -> impl Responder {
+    let token = &info.token;
+    let new_password = &info.new_password;
+
+    match PasswordResetToken::find_by_token(pool.get_ref(), token).await {
+        Ok(reset_token) => {
+            if Utc::now().naive_utc() > reset_token.reset_token_expires {
+                return HttpResponse::BadRequest().json("Token has expired");
+            }
+
+            let password_hash = hash(new_password, bcrypt::DEFAULT_COST).unwrap();
+            User::update_password(pool.get_ref(), reset_token.user_id, &password_hash)
+                .await
+                .unwrap();
+            PasswordResetToken::delete_by_user_id(pool.get_ref(), reset_token.user_id)
+                .await
+                .unwrap();
+            HttpResponse::Ok().json("Password has been reset")
+        }
+        Err(_) => HttpResponse::BadRequest().json("Invalid token"),
     }
 }

@@ -54,3 +54,11 @@ export const likePost = async (postId) => {
 export const checkPostValidity = async (postId) => {
   return axiosInstance.get(`/posts/check-validity/${postId}`);
 };
+
+export const requestPasswordReset = async (email) => {
+  return axiosInstance.post('/auth/request-reset', { email });
+};
+
+export const resetPassword = async (token, newPassword) => {
+  return axiosInstance.post('/auth/reset-password', { token, newPassword });
+};

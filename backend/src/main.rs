@@ -1,3 +1,4 @@
+mod email;
 mod fake_news_detector;
 mod handlers;
 mod models;
@@ -37,7 +38,15 @@ async fn main() -> std::io::Result<()> {
                 web::scope("/auth")
                     .route("/register", web::post().to(handlers::auth::register))
                     .route("/login", web::post().to(handlers::auth::login))
-                    .route("/logout", web::post().to(handlers::auth::logout)),
+                    .route("/logout", web::post().to(handlers::auth::logout))
+                    .route(
+                        "/request-reset",
+                        web::post().to(handlers::auth::request_password_reset),
+                    )
+                    .route(
+                        "/reset-password",
+                        web::post().to(handlers::auth::reset_password),
+                    ),
             )
             .service(
                 web::scope("/posts")
