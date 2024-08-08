@@ -126,6 +126,16 @@ CREATE TABLE comment_likes (
     FOREIGN KEY (comment_id) REFERENCES comments(comment_id) ON DELETE CASCADE
 );
 
+-- Create the password_reset_tokens table
+CREATE TABLE password_reset_tokens (
+    token_id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    reset_token VARCHAR(255) NOT NULL,
+    reset_token_expires TIMESTAMP NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES member(member_id) ON DELETE CASCADE
+);
+
+
 -- Creating the 'user_authentication' view
 CREATE VIEW user_authentication AS
 SELECT
@@ -149,3 +159,4 @@ SELECT
     profile_pic,
     'admin' AS user_type
 FROM admin;
+
