@@ -89,6 +89,25 @@ async fn main() -> std::io::Result<()> {
                     )
                     .route("/check", web::get().to(handlers::friends::are_friends)),
             )
+            .service(
+                web::scope("/comments")
+                    .route(
+                        "/create",
+                        web::post().to(handlers::comments::create_comment),
+                    )
+                    .route(
+                        "/{id}",
+                        web::get().to(handlers::comments::get_comment_by_id),
+                    )
+                    .route(
+                        "/post/{post_id}",
+                        web::get().to(handlers::comments::get_comments_by_post_id),
+                    )
+                    .route(
+                        "/{id}",
+                        web::delete().to(handlers::comments::delete_comment),
+                    ),
+            )
     })
     .bind("127.0.0.1:8080")?
     .run()

@@ -1,12 +1,93 @@
+use crate::models::comment_model::Comment;
+use actix_session::Session;
 use actix_web::{web, HttpResponse, Responder};
-use serde::Deserialize;
+use sqlx::PgPool;
 
-#[derive(Deserialize)]
-struct CommentInput {
-    content: String,
+pub async fn create_comment(
+    pool: web::Data<PgPool>,
+    session: Session,
+    new_comment: web::Json<Comment>,
+) -> impl Responder {
+    let user_id: i32 = match session.get("user_id") {
+        Ok(Some(id)) => id,
+        _ => return HttpResponse::Unauthorized().json("Unauthorized"),
+    };
+
+    let user_type: String = match session.get("user_type") {
+        Ok(Some(user_type)) => user_type,
+        _ => return HttpResponse::Unauthorized().json("Unauthorized"),
+    };
+
+    let mut comment = new_comment.into_inner();
+    comment.author_id = user_id;
+    comment.author_type = user_type;
+
+    match Comment::create(pool.get_ref(), comment).await {
+        Ok(created_comment) => HttpResponse::Ok().json(created_comment),
+        Err(e) => {
+            eprintln!("Error creating comment: {:?}", e);
+            HttpResponse::InternalServerError().json("Error creating comment")
+        }
+    }
 }
 
-async fn add_comment(post_id: web::Path<String>, info: web::Json<CommentInput>) -> impl Responder {
-    // Implement comment creation logic here
-    HttpResponse::Ok().json("Comment added")
+pub async fn get_comment_by_id(
+    pool: web::Data<PgPool>,
+    comment_id: web::Path<i32>,
+) -> impl Responder {
+    match Comment::find_by_id(pool.get_ref(), *comment_id).await {
+        Ok(comment) => HttpResponse::Ok().json(comment),
+        Err(e) => {
+            eprintln!("Error fetching comment: {:?}", e);
+            HttpResponse::InternalServerError().json("Error fetching comment")
+        }
+    }
+}
+
+pub async fn get_comments_by_post_id(
+    pool: web::Data<PgPool>,
+    post_id: web::Path<i32>,
+) -> impl Responder {
+    match Comment::find_by_post_id(pool.get_ref(), *post_id).await {
+        Ok(comments) => HttpResponse::Ok().json(comments),
+        Err(e) => {
+            eprintln!("Error fetching comments: {:?}", e);
+            HttpResponse::InternalServerError().json("Error fetching comments")
+        }
+    }
+}
+
+pub async fn delete_comment(
+    pool: web::Data<PgPool>,
+    session: Session,
+    comment_id: web::Path<i32>,
+) -> impl Responder {
+    let user_id: i32 = match session.get("user_id") {
+        Ok(Some(id)) => id,
+        _ => return HttpResponse::Unauthorized().json("Unauthorized"),
+    };
+
+    // Fetch the existing comment to verify the author
+    let existing_comment = match Comment::find_by_id(pool.get_ref(), *comment_id).await {
+        Ok(comment) => comment,
+        Err(e) => {
+            eprintln!("Error fetching comment: {:?}", e);
+            return HttpResponse::InternalServerError().json("Error fetching comment");
+        }
+    };
+
+    if existing_comment.author_id != user_id {
+        return HttpResponse::Unauthorized().json("Unauthorized");
+    }
+
+    match sqlx::query!("DELETE FROM comments WHERE comment_id = $1", *comment_id)
+        .execute(pool.get_ref())
+        .await
+    {
+        Ok(_) => HttpResponse::Ok().json("Comment deleted"),
+        Err(e) => {
+            eprintln!("Error deleting comment: {:?}", e);
+            HttpResponse::InternalServerError().json("Error deleting comment")
+        }
+    }
 }
