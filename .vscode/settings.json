@@ -3,6 +3,7 @@
     "conventionalCommits.gitmoji": true,
     "git.enableSmartCommit": true,
     "conventionalCommits.scopes": [
-        "Backend"
+        "Backend",
+        "Frontend"
     ]
 }

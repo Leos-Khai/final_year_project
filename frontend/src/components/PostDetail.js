@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import '../assets/styles/PostDetail.css';
 import { getPostById, checkPostValidity, deletePost } from '../services/api';
-import { useUserContext } from '../App'; // Adjust the import path according to your file structure
+import { useUserContext } from '../App';
+import CommentSection from './CommentSection'; // Import the CommentSection component
 
 function PostDetail() {
   const { id } = useParams(); // Get the post ID from the URL
@@ -87,19 +88,24 @@ function PostDetail() {
         <button className="validity-button" onClick={handleCheckValidity}>Check Post Validity</button>
       </div>
 
+      {/* Add the CommentSection here */}
+      <CommentSection postId={id} />
+
       {/* Modal for displaying validity results */}
-      {showModal && (
-        <div className="modal" style={{ display: 'block' }}>
-          <div className="modal-content">
-            <span className="close" onClick={closeModal}>&times;</span>
-            <h2>Post Validity Result</h2>
-            <p>Validity: {validity.result}</p>
-            <p>Fake News Probability: {validity.fake_probability}%</p>
-            <p>Real News Probability: {validity.real_probability}%</p>
+      {
+        showModal && (
+          <div className="modal" style={{ display: 'block' }}>
+            <div className="modal-content">
+              <span className="close" onClick={closeModal}>&times;</span>
+              <h2>Post Validity Result</h2>
+              <p>Validity: {validity.result}</p>
+              <p>Fake News Probability: {validity.fake_probability * 100}%</p>
+              <p>Real News Probability: {validity.real_probability * 100}%</p>
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )
+      }
+    </div >
   );
 }
 

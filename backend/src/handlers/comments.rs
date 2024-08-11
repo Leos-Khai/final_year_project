@@ -1,12 +1,19 @@
 use crate::models::comment_model::Comment;
 use actix_session::Session;
 use actix_web::{web, HttpResponse, Responder};
+use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
+
+#[derive(Deserialize, Serialize, Debug)]
+pub struct CreateCommentPayload {
+    pub post_id: i32,
+    pub comment_content: String,
+}
 
 pub async fn create_comment(
     pool: web::Data<PgPool>,
     session: Session,
-    new_comment: web::Json<Comment>,
+    new_comment: web::Json<CreateCommentPayload>, // Adjusted the expected payload
 ) -> impl Responder {
     let user_id: i32 = match session.get("user_id") {
         Ok(Some(id)) => id,
@@ -18,9 +25,17 @@ pub async fn create_comment(
         _ => return HttpResponse::Unauthorized().json("Unauthorized"),
     };
 
-    let mut comment = new_comment.into_inner();
-    comment.author_id = user_id;
-    comment.author_type = user_type;
+    println!("Received new comment: {:?}", new_comment);
+
+    let comment = Comment {
+        author_id: user_id,
+        author_type: user_type,
+        comment_content: new_comment.comment_content.clone(),
+        post_id: new_comment.post_id,
+        author_name: "khai".to_string(),
+        comment_date: None,
+        comment_id: 0,
+    };
 
     match Comment::create(pool.get_ref(), comment).await {
         Ok(created_comment) => HttpResponse::Ok().json(created_comment),

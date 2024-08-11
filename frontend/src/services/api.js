@@ -66,8 +66,8 @@ export const checkPostValidity = async (postId) => {
 };
 
 // Comments API
-export const createComment = async (comment) => {
-  return axiosInstance.post('/comments/create', comment);
+export const createComment = async (postId, comment) => {
+  return axiosInstance.post('/comments/create', { post_id: postId, comment_content: comment });
 };
 
 export const getCommentById = async (commentId) => {
