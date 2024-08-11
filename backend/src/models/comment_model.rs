@@ -88,5 +88,44 @@ impl Comment {
         Ok(comments)
     }
 
-    // Other methods remain unchanged...
+    // Update a comment
+    pub async fn update(pool: &PgPool, comment_id: i32, updated_content: String) -> Result<Self> {
+        let updated_comment = sqlx::query_as!(
+            Comment,
+            r#"
+            UPDATE comments
+            SET comment_content = $1, comment_date = $2
+            WHERE comment_id = $3
+            RETURNING comment_id, comment_content, comment_date, author_type, author_id, post_id,
+                      COALESCE(
+                          CASE
+                              WHEN author_type = 'member' THEN (SELECT username FROM member WHERE member_id = author_id)
+                              WHEN author_type = 'admin' THEN (SELECT username FROM admin WHERE admin_id = author_id)
+                          END, ''
+                      ) AS "author_name!"
+            "#,
+            updated_content,
+            Some(Utc::now().naive_utc()),
+            comment_id
+        )
+        .fetch_one(pool)
+        .await?;
+
+        Ok(updated_comment)
+    }
+
+    // Delete a comment
+    pub async fn delete(pool: &PgPool, comment_id: i32) -> Result<u64> {
+        let deleted_rows = sqlx::query!(
+            r#"
+            DELETE FROM comments WHERE comment_id = $1
+            "#,
+            comment_id
+        )
+        .execute(pool)
+        .await?
+        .rows_affected();
+
+        Ok(deleted_rows)
+    }
 }

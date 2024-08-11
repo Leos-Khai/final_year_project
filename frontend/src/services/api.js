@@ -7,6 +7,7 @@ const axiosInstance = axios.create({
   withCredentials: true, // Important to include cookies in requests
 });
 
+// Auth API
 export const register = async (username, email, password) => {
   return axiosInstance.post('/auth/register', { username, email, password });
 };
@@ -19,6 +20,15 @@ export const logout = async () => {
   return axiosInstance.post('/auth/logout');
 };
 
+export const requestPasswordReset = async (email) => {
+  return axiosInstance.post('/auth/request-reset', { email });
+};
+
+export const resetPassword = async (token, newPassword) => {
+  return axiosInstance.post('/auth/reset-password', { token, new_password: newPassword });
+};
+
+// Posts API
 export const createPost = async (post) => {
   return axiosInstance.post('/posts/create', post);
 };
@@ -55,10 +65,19 @@ export const checkPostValidity = async (postId) => {
   return axiosInstance.get(`/posts/check-validity/${postId}`);
 };
 
-export const requestPasswordReset = async (email) => {
-  return axiosInstance.post('/auth/request-reset', { email });
+// Comments API
+export const createComment = async (comment) => {
+  return axiosInstance.post('/comments/create', comment);
 };
 
-export const resetPassword = async (token, newPassword) => {
-  return axiosInstance.post('/auth/reset-password', { token, new_password: newPassword });
+export const getCommentById = async (commentId) => {
+  return axiosInstance.get(`/comments/${commentId}`);
+};
+
+export const getCommentsByPostId = async (postId) => {
+  return axiosInstance.get(`/comments/post/${postId}`);
+};
+
+export const deleteComment = async (commentId) => {
+  return axiosInstance.delete(`/comments/${commentId}`);
 };

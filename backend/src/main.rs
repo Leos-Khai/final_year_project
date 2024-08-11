@@ -103,6 +103,7 @@ async fn main() -> std::io::Result<()> {
                         "/post/{post_id}",
                         web::get().to(handlers::comments::get_comments_by_post_id),
                     )
+                    .route("/{id}", web::put().to(handlers::comments::update_comment)) // New route for updating a comment
                     .route(
                         "/{id}",
                         web::delete().to(handlers::comments::delete_comment),

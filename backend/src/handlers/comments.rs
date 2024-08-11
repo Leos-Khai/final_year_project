@@ -57,6 +57,40 @@ pub async fn get_comments_by_post_id(
     }
 }
 
+pub async fn update_comment(
+    pool: web::Data<PgPool>,
+    session: Session,
+    comment_id: web::Path<i32>,
+    updated_content: web::Json<String>,
+) -> impl Responder {
+    let user_id: i32 = match session.get("user_id") {
+        Ok(Some(id)) => id,
+        _ => return HttpResponse::Unauthorized().json("Unauthorized"),
+    };
+
+    // Fetch the existing comment to verify the author
+    let existing_comment = match Comment::find_by_id(pool.get_ref(), *comment_id).await {
+        Ok(comment) => comment,
+        Err(e) => {
+            eprintln!("Error fetching comment: {:?}", e);
+            return HttpResponse::InternalServerError().json("Error fetching comment");
+        }
+    };
+
+    if existing_comment.author_id != user_id {
+        return HttpResponse::Unauthorized().json("Unauthorized");
+    }
+
+    // Update the comment using the method from the model
+    match Comment::update(pool.get_ref(), *comment_id, updated_content.into_inner()).await {
+        Ok(updated_comment) => HttpResponse::Ok().json(updated_comment),
+        Err(e) => {
+            eprintln!("Error updating comment: {:?}", e);
+            HttpResponse::InternalServerError().json("Error updating comment")
+        }
+    }
+}
+
 pub async fn delete_comment(
     pool: web::Data<PgPool>,
     session: Session,
@@ -80,10 +114,8 @@ pub async fn delete_comment(
         return HttpResponse::Unauthorized().json("Unauthorized");
     }
 
-    match sqlx::query!("DELETE FROM comments WHERE comment_id = $1", *comment_id)
-        .execute(pool.get_ref())
-        .await
-    {
+    // Delete the comment using the method from the model
+    match Comment::delete(pool.get_ref(), *comment_id).await {
         Ok(_) => HttpResponse::Ok().json("Comment deleted"),
         Err(e) => {
             eprintln!("Error deleting comment: {:?}", e);
