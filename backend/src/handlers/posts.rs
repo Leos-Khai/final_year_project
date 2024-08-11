@@ -59,7 +59,13 @@ pub async fn get_posts_by_user_id(
     let result = sqlx::query_as!(
         Post,
         r#"
-        SELECT post_id, post_title, post_content, post_date, like_count, view_count, author_type, author_id
+        SELECT post_id, post_title, post_content, post_date, like_count, view_count, author_type, author_id,
+               COALESCE(
+                   CASE
+                       WHEN author_type = 'member' THEN (SELECT username FROM member WHERE member_id = author_id)
+                       WHEN author_type = 'admin' THEN (SELECT username FROM admin WHERE admin_id = author_id)
+                   END, NULL
+               ) AS author_name
         FROM posts
         WHERE author_id = $1
         "#,
@@ -86,7 +92,13 @@ pub async fn get_posts_by_friends(pool: web::Data<PgPool>, session: Session) -> 
     let result = sqlx::query_as!(
         Post,
         r#"
-        SELECT p.post_id, p.post_title, p.post_content, p.post_date, p.like_count, p.view_count, p.author_type, p.author_id
+        SELECT p.post_id, p.post_title, p.post_content, p.post_date, p.like_count, p.view_count, p.author_type, p.author_id,
+               COALESCE(
+                   CASE
+                       WHEN p.author_type = 'member' THEN (SELECT username FROM member WHERE member_id = p.author_id)
+                       WHEN p.author_type = 'admin' THEN (SELECT username FROM admin WHERE admin_id = p.author_id)
+                   END, NULL
+               ) AS author_name
         FROM posts p
         INNER JOIN friends f ON p.author_id = f.user_id1
         WHERE f.user_id1 = $1
@@ -107,15 +119,21 @@ pub async fn get_posts_by_friends(pool: web::Data<PgPool>, session: Session) -> 
 
 pub async fn get_all_posts(pool: web::Data<PgPool>) -> impl Responder {
     let result = sqlx::query_as!(
-      Post,
-      r#"
-      SELECT post_id, post_title, post_content, post_date, like_count, view_count, author_type, author_id
-      FROM posts
-      ORDER BY post_date DESC
-      "#
-  )
-  .fetch_all(pool.get_ref())
-  .await;
+        Post,
+        r#"
+        SELECT post_id, post_title, post_content, post_date, like_count, view_count, author_type, author_id,
+               COALESCE(
+                   CASE
+                       WHEN author_type = 'member' THEN (SELECT username FROM member WHERE member_id = author_id)
+                       WHEN author_type = 'admin' THEN (SELECT username FROM admin WHERE admin_id = author_id)
+                   END, NULL
+               ) AS author_name
+        FROM posts
+        ORDER BY post_date DESC
+        "#
+    )
+    .fetch_all(pool.get_ref())
+    .await;
 
     match result {
         Ok(posts) => HttpResponse::Ok().json(posts),
