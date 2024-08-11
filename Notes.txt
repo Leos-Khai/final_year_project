@@ -2,5 +2,3 @@ Mail support for password reset (verification in future).
 lettre library for sending email.
 
 https://chatgpt.com/c/b2b91999-e5a5-4768-9c81-f8aa69ec795d
-
-kdxz abjf jzku ehwt
