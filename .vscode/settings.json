@@ -1,5 +1,8 @@
 {
     "editor.indentSize": 2,
     "conventionalCommits.gitmoji": true,
-    "git.enableSmartCommit": true
+    "git.enableSmartCommit": true,
+    "conventionalCommits.scopes": [
+        "Backend"
+    ]
 }

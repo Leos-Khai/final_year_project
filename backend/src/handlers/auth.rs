@@ -24,8 +24,6 @@ pub struct UserResponse {
 }
 
 pub async fn register(pool: web::Data<PgPool>, info: web::Json<RegisterInput>) -> impl Responder {
-    println!("Received register request: {:?}", info);
-
     let username = &info.username;
     let email = &info.email;
     let password = &info.password;
