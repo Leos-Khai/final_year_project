@@ -1,3 +1,5 @@
 {
-    "editor.indentSize": 2
+    "editor.indentSize": 2,
+    "conventionalCommits.gitmoji": true,
+    "git.enableSmartCommit": true
 }
