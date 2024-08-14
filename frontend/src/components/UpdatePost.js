@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { getPostById, updatePost } from '../services/api';
 import '../assets/styles/UpdatePost.css';
 
 function UpdatePost() {
   const { id } = useParams(); // Get the post ID from the URL
-  const [post, setPost] = useState(null);
+  const navigate = useNavigate();
+  const [post, setPost] = useState(null); // State to hold the entire post object
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(true);
@@ -15,7 +16,7 @@ function UpdatePost() {
     const fetchPost = async () => {
       try {
         const response = await getPostById(id);
-        setPost(response.data);
+        setPost(response.data); // Store the entire post object
         setTitle(response.data.post_title);
         setContent(response.data.post_content);
       } catch (error) {
@@ -31,7 +32,21 @@ function UpdatePost() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add your submit functionality here
+
+    // Update the post object with the new title and content
+    const updatedPost = {
+      ...post, // Spread the existing post data
+      post_title: title, // Update the title
+      post_content: content, // Update the content
+    };
+
+    try {
+      await updatePost(id, updatedPost);
+      navigate(`/post-detail/${id}`);
+    } catch (error) {
+      setError("Error updating post.");
+      console.error("Error updating post:", error);
+    }
   };
 
   if (loading) {
@@ -40,10 +55,6 @@ function UpdatePost() {
 
   if (error) {
     return <div>{error}</div>;
-  }
-
-  if (!post) {
-    return <div>No post found</div>;
   }
 
   return (

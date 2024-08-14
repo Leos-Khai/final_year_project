@@ -154,6 +154,7 @@ pub async fn update_post(
         Ok(Some(id)) => id,
         _ => return HttpResponse::Unauthorized().json("Unauthorized"),
     };
+    println!("Post: {:?}", updated_post);
 
     // Fetch the existing post to verify the author
     let existing_post = match Post::find_by_id(pool.get_ref(), *post_id).await {

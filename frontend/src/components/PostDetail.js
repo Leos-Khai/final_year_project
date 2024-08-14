@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import '../assets/styles/PostDetail.css';
-import { getPostById, checkPostValidity, deletePost } from '../services/api';
+import { getPostById, checkPostValidity, deletePost, likePost } from '../services/api';
 import { useUserContext } from '../App';
 import CommentSection from './CommentSection'; // Import the CommentSection component
 
@@ -45,6 +45,16 @@ function PostDetail() {
     }
   };
 
+  const handleLike = async () => {
+    try {
+      const response = await likePost(id); // Call the likePost API
+      setPost(response.data); // Update the post data with the new like count
+    } catch (error) {
+      console.error('Error liking post:', error);
+      setError('Error liking post');
+    }
+  };
+
   const handleCheckValidity = async () => {
     try {
       const response = await checkPostValidity(id);
@@ -78,13 +88,15 @@ function PostDetail() {
         <h1>{post.post_title}</h1>
         <div className="views">Views: {post.view_count}</div>
         <p>{post.post_content}</p>
-        <button className="likes-button">Likes: {post.like_count}</button>
+        <button className="likes-button" onClick={handleLike}>Likes: {post.like_count}</button>
         {user && user.user_id === post.author_id && (
           <div className="author-actions">
             <button className="update-button" onClick={handleUpdate}>Update</button>
             <button className="delete-button" onClick={handleDelete}>Delete</button>
           </div>
         )}
+        <br />
+        <br />
         <button className="validity-button" onClick={handleCheckValidity}>Check Post Validity</button>
       </div>
 

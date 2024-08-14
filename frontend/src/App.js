@@ -10,6 +10,7 @@ import Post from './components/Post';
 import Friends from './components/Friends';
 import UserDetail from './components/UserDetail';
 import PostDetail from './components/PostDetail';
+import UpdatePost from './components/UpdatePost';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import './App.css';
@@ -41,6 +42,7 @@ function App() {
               <Route path="/friends" element={user ? <Friends /> : <Navigate to="/login" />} />
               <Route path="/user-detail" element={user ? <UserDetail /> : <Navigate to="/login" />} />
               <Route path="/post-detail/:id" element={user ? <PostDetail /> : <Navigate to="/login" />} />
+              <Route path="/update-post/:id" element={user ? <UpdatePost /> : <Navigate to="/login" />} />
               <Route path="/contact" element={<HomePage />} />
               <Route path="/about" element={<HomePage />} />
             </Routes>

@@ -124,39 +124,51 @@ impl Post {
     }
 
     // Like post
-    pub async fn like_post(pool: &PgPool, user_id: i32, post_id: i32) -> Result<Self> {
-        // Insert a new like record
+    pub async fn like_post(pool: &PgPool, user_id: i32, post_id: i32) -> Result<Post> {
+        // Insert a new like record, avoiding duplicates
         sqlx::query!(
             r#"
-            INSERT INTO post_likes (user_id, post_id)
-            VALUES ($1, $2)
-            ON CONFLICT DO NOTHING
-            "#,
+          INSERT INTO post_likes (user_id, post_id)
+          VALUES ($1, $2)
+          ON CONFLICT DO NOTHING
+          "#,
             user_id,
             post_id
         )
         .execute(pool)
         .await?;
 
-        // Update the like count in the post table
-        let post = sqlx::query_as!(
-            Post,
+        // Count the total likes for the post from the post_likes table
+        let like_count: i64 = sqlx::query_scalar!(
             r#"
-            UPDATE posts
-            SET like_count = like_count + 1
-            WHERE post_id = $1
-            RETURNING post_id, post_title, post_content, post_date, like_count, view_count, author_type, author_id,
-                      COALESCE(
-                          CASE
-                              WHEN author_type = 'member' THEN (SELECT username FROM member WHERE member_id = author_id)
-                              WHEN author_type = 'admin' THEN (SELECT username FROM admin WHERE admin_id = author_id)
-                          END, NULL
-                      ) AS author_name
-            "#,
+          SELECT COUNT(*) FROM post_likes WHERE post_id = $1
+          "#,
             post_id
         )
         .fetch_one(pool)
-        .await?;
+        .await?
+        .expect("Expected a like count but found None");
+
+        // Update the like_count in the posts table based on the actual count from the post_likes table
+        let post = sqlx::query_as!(
+          Post,
+          r#"
+          UPDATE posts
+          SET like_count = $1
+          WHERE post_id = $2
+          RETURNING post_id, post_title, post_content, post_date, like_count, view_count, author_type, author_id,
+                    COALESCE(
+                        CASE
+                            WHEN author_type = 'member' THEN (SELECT username FROM member WHERE member_id = author_id)
+                            WHEN author_type = 'admin' THEN (SELECT username FROM admin WHERE admin_id = author_id)
+                        END, NULL
+                    ) AS author_name
+          "#,
+          like_count as i32,
+          post_id
+      )
+      .fetch_one(pool)
+      .await?;
 
         Ok(Post {
             author_name: post.author_name.or(Some("".to_string())),
