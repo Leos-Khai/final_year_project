@@ -21,3 +21,4 @@ backend/__tokenizer.json
 backend/.env
 backend/.sqlx
 
+*.txt
