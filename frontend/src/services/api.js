@@ -81,3 +81,19 @@ export const getCommentsByPostId = async (postId) => {
 export const deleteComment = async (commentId) => {
   return axiosInstance.delete(`/comments/${commentId}`);
 };
+
+export const getProfile = async () => {
+  return axiosInstance.get('/profile/');
+};
+
+export const deleteProfile = async () => {
+  return axiosInstance.delete('/profile/');
+};
+
+export const updateProfile = async (profile) => {
+  return axiosInstance.put('/profile/', profile);
+};
+
+export const updatePassword = async (oldPassword, newPassword) => {
+  return axiosInstance.put('/profile/update-password', { old_password: oldPassword, new_password: newPassword });
+};

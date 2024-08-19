@@ -1,0 +1,57 @@
+.update-profile {
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.update-profile h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #ffffff;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #cccccc;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #444444;
+  border-radius: 4px;
+  background-color: #333333;
+  color: #e0e0e0;
+}
+
+.form-group input:disabled {
+  background-color: #2a2a2a;
+  color: #888888;
+}
+
+button[type="submit"] {
+  background-color: #4caf50;
+  color: #ffffff;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button[type="submit"]:hover {
+  background-color: #45a049;
+}
+
+button[type="submit"]:focus {
+  outline: none;
+}

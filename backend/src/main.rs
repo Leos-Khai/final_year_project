@@ -109,6 +109,16 @@ async fn main() -> std::io::Result<()> {
                         web::delete().to(handlers::comments::delete_comment),
                     ),
             )
+            .service(
+                web::scope("/profile") // New scope for user profile management
+                    .route("/", web::get().to(handlers::user::get_profile)) // Route for getting the user's profile
+                    .route("/", web::put().to(handlers::user::update_profile)) // Route for updating the user's profile
+                    .route("/", web::delete().to(handlers::user::delete_profile)) // Route for deleting the user's profile
+                    .route(
+                        "/update-password",
+                        web::put().to(handlers::user::update_password),
+                    ), // New route for updating password
+            )
     })
     .bind("127.0.0.1:8080")?
     .run()

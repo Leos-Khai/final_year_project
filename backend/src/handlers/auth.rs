@@ -48,8 +48,7 @@ pub async fn register(pool: web::Data<PgPool>, info: web::Json<RegisterInput>) -
     };
 
     // Create a new member
-    let new_member = crate::models::member_model::Member {
-        member_id: 0, // This will be ignored by the database
+    let new_member = crate::models::member_model::NewMember {
         username: username.clone(),
         email: email.clone(),
         password_hash: password_hash.clone(),

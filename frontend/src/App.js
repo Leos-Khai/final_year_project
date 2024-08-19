@@ -11,6 +11,9 @@ import Friends from './components/Friends';
 import UserDetail from './components/UserDetail';
 import PostDetail from './components/PostDetail';
 import UpdatePost from './components/UpdatePost';
+import Profile from './components/Profile';
+import UpdateProfile from './components/UpdateProfile';
+import UpdatePassword from './components/UpdatePassword';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import './App.css';
@@ -43,6 +46,9 @@ function App() {
               <Route path="/user-detail" element={user ? <UserDetail /> : <Navigate to="/login" />} />
               <Route path="/post-detail/:id" element={user ? <PostDetail /> : <Navigate to="/login" />} />
               <Route path="/update-post/:id" element={user ? <UpdatePost /> : <Navigate to="/login" />} />
+              <Route path="/profile" element={user ? <Profile /> : <Navigate to="/login" />} />
+              <Route path="/update-profile" element={user ? <UpdateProfile /> : <Navigate to="/login" />} />
+              <Route path="/update-password" element={user ? <UpdatePassword /> : <Navigate to="/login" />} />
               <Route path="/contact" element={<HomePage />} />
               <Route path="/about" element={<HomePage />} />
             </Routes>
