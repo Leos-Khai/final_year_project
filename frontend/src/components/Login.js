@@ -7,6 +7,7 @@ import '../assets/styles/Login.css';
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
   const { setUser } = useUserContext(); // Access the user context
   const [error, setError] = useState(null); // Initialize error state as null
   const navigate = useNavigate(); // Hook to navigate to different routes
@@ -46,12 +47,21 @@ function Login() {
         <div className="form-group">
           <label htmlFor="password">Password:</label>
           <input
-            type="password"
+            type={showPassword ? 'text' : 'password'} // Toggle between text and password
             id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+        </div>
+        <div className="form-group">
+          <input
+            type="checkbox"
+            id="showPassword"
+            checked={showPassword}
+            onChange={(e) => setShowPassword(e.target.checked)} // Toggle checkbox state
+          />
+          <label htmlFor="showPassword">Show Password</label>
         </div>
         <button type="submit" className="login-button">Login</button>
         <p className="link-text">
