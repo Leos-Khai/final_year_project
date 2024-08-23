@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getProfile, deleteProfile } from '../services/api';
+import { getProfile, deleteProfile, logout } from '../services/api'; // Import logout function
 import '../assets/styles/Profile.css';
+import { useUserContext } from '../App';
 
 function Profile() {
+  const { setUser } = useUserContext();
   const [profile, setProfile] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -15,7 +17,7 @@ function Profile() {
         const response = await getProfile();
         setProfile(response.data);
       } catch (error) {
-        setError('Error fetching profile information.');
+        setError(error.response?.data || 'Error fetching profile information.');
         console.error('Error fetching profile:', error);
       } finally {
         setLoading(false);
@@ -36,10 +38,12 @@ function Profile() {
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete your profile?')) {
       try {
-        await deleteProfile();
-        navigate('/');
+        await deleteProfile();  // Delete profile on the server
+        await logout();  // Clear session on the server
+        setUser(null);
+        navigate('/login');  // Redirect to login page
       } catch (error) {
-        setError('Error deleting profile.');
+        setError(error.response?.data || 'Error deleting profile.');
         console.error('Error deleting profile:', error);
       }
     }
@@ -65,7 +69,6 @@ function Profile() {
         <p><strong>Email:</strong> {profile.email}</p>
         <p><strong>Full Name:</strong> {profile.full_name || 'N/A'}</p>
         <p><strong>Phone Number:</strong> {profile.phone_number || 'N/A'}</p>
-        <p><strong>Profile Picture:</strong> {profile.profile_pic ? <img src={profile.profile_pic} alt="Profile" /> : 'N/A'}</p>
       </div>
       <div className="profile-actions">
         <button onClick={handleUpdate} className="update-button">Update Profile</button>
@@ -77,3 +80,4 @@ function Profile() {
 }
 
 export default Profile;
+/* <p><strong>Profile Picture:</strong> {profile.profile_pic ? <img src={profile.profile_pic} alt="Profile" /> : 'N/A'}</p> */

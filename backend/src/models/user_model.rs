@@ -55,6 +55,28 @@ impl User {
         Ok(user)
     }
 
+    /// Fetch a user by ID
+    pub async fn find_by_id(pool: &PgPool, user_id: i32) -> Result<Self> {
+        let user = sqlx::query_as!(
+            User,
+            r#"
+              SELECT 
+                  user_id, 
+                  username, 
+                  email, 
+                  password_hash, 
+                  user_type
+              FROM user_authentication
+              WHERE user_id = $1
+              "#,
+            user_id
+        )
+        .fetch_one(pool)
+        .await?;
+
+        Ok(user)
+    }
+
     /// Update a user's password
     pub async fn update_password(pool: &PgPool, user_id: i32, password_hash: &str) -> Result<()> {
         sqlx::query!(

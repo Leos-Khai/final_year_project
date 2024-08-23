@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUserContext } from '../App';
-import { logout as apiLogout } from '../services/api'; // Make sure the path is correct
+import { logout as apiLogout } from '../services/api';
 
 function Logout() {
   const { setUser } = useUserContext();

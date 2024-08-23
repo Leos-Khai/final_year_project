@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../assets/styles/Registration.css';
 import { register } from '../services/api';
+import { validatePassword } from '../utils/passwordUtils'; // Import the validation function
 
 function RegistrationPage() {
   const [formData, setFormData] = useState({
@@ -11,13 +12,26 @@ function RegistrationPage() {
     confirmPassword: ''
   });
   const [error, setError] = useState(null);
+  const [validationError, setValidationError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const { password, confirmPassword } = formData;
-    setIsButtonDisabled(password !== confirmPassword || !password || !confirmPassword);
+    const { password } = formData;
+
+    if (!validatePassword(password)) {
+      setValidationError('Password must include lowercase, uppercase, number, and special character');
+    } else {
+      setValidationError(null);
+    }
+
+    setIsButtonDisabled(
+      password !== formData.confirmPassword ||
+      !validatePassword(password) || // Use the validation function
+      !password ||
+      !formData.confirmPassword
+    );
   }, [formData]);
 
   const handleChange = (e) => {
@@ -77,7 +91,11 @@ function RegistrationPage() {
         value={formData.password}
         onChange={handleChange}
       />
-
+      {validationError && (
+        <div className="validation-error">
+          {validationError}
+        </div>
+      )}
       <label htmlFor="confirmPassword">Confirm Password:</label>
       <input
         type="password"

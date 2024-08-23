@@ -1,64 +1,58 @@
+/* src/assets/styles/Login.css */
 .login-container {
-  max-width: 400px;
-  margin: 0 auto;
+  background-color: #1e1e1e;
+  color: #f5f5f5;
   padding: 20px;
-  background-color: #424242;
-  color: #f4f4f4;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  max-width: 400px;
+  margin: auto;
 }
 
-.login-container h2 {
-  text-align: center;
-  margin-bottom: 20px;
+form {
+  display: flex;
+  flex-direction: column;
 }
 
-.login-container label {
-  display: block;
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
   margin-bottom: 5px;
 }
 
-.login-container input {
-  width: 100%;
+input {
   padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-sizing: border-box;
-  background-color: #f4f4f4;
-  /* Light background color */
-  color: #333;
+  border: 1px solid #333;
+  border-radius: 4px;
+  background-color: #333;
+  color: #f5f5f5;
 }
 
-.login-container button {
-  width: 100%;
-  padding: 10px;
-  background-color: #007BFF;
+button.login-button {
+  background-color: #4caf50;
   color: white;
   border: none;
-  border-radius: 5px;
+  padding: 10px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s ease;
 }
 
-.login-container button:hover {
-  background-color: #0056b3;
+button.login-button:hover {
+  background-color: #45a049;
 }
 
-.login-container p {
-  text-align: center;
+.error-message {
+  color: red;
+  margin-bottom: 15px;
 }
 
-.login-container p a {
-  color: #007BFF;
-  text-decoration: none;
-}
-
-.login-container p a:hover {
-  text-decoration: underline;
-}
-
-.login-container div[style="color: red;"] {
+.link-text {
   margin-top: 10px;
-  text-align: center;
+  color: #f5f5f5;
+}
+
+.link-text a {
+  color: #2196f3;
 }

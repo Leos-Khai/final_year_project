@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { updatePassword } from '../services/api';
+import { validatePassword } from '../utils/passwordUtils'; // Import the validation function
 import '../assets/styles/UpdatePassword.css';
 
 function UpdatePassword() {
@@ -9,13 +10,26 @@ function UpdatePassword() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [error, setError] = useState(null);
+  const [validationError, setValidationError] = useState(null);
 
   const isSubmitDisabled =
     oldPassword === newPassword ||
     newPassword !== confirmNewPassword ||
+    !validatePassword(newPassword) || // Use the validation function
     !oldPassword ||
     !newPassword ||
     !confirmNewPassword;
+
+  const handleNewPasswordChange = (e) => {
+    const value = e.target.value;
+    setNewPassword(value);
+
+    if (!validatePassword(value)) {
+      setValidationError('Password must include lowercase, uppercase, number, and special character');
+    } else {
+      setValidationError(null);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -50,10 +64,15 @@ function UpdatePassword() {
             id="new_password"
             name="new_password"
             value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
+            onChange={handleNewPasswordChange}
             required
           />
         </div>
+        {validationError && (
+          <div className="validation-error">
+            {validationError}
+          </div>
+        )}
         <div className="form-group">
           <label htmlFor="confirm_new_password">Confirm New Password</label>
           <input

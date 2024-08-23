@@ -173,18 +173,41 @@ pub async fn reset_password(
     match PasswordResetToken::find_by_token(pool.get_ref(), token).await {
         Ok(reset_token) => {
             if Utc::now().naive_utc() > reset_token.reset_token_expires {
-                println!("Expire");
+                println!("Token has expired");
                 return HttpResponse::BadRequest().json("Token has expired");
             }
 
-            let password_hash = hash(new_password, bcrypt::DEFAULT_COST).unwrap();
-            User::update_password(pool.get_ref(), reset_token.user_id, &password_hash)
-                .await
-                .unwrap();
-            PasswordResetToken::delete_by_user_id(pool.get_ref(), reset_token.user_id)
-                .await
-                .unwrap();
-            HttpResponse::Ok().json("Password has been reset")
+            // Fetch the current user details
+            match User::find_by_id(pool.get_ref(), reset_token.user_id).await {
+                Ok(user) => {
+                    // Verify that the new password is not the same as the current one
+                    let is_same_password =
+                        bcrypt::verify(new_password, user.password_hash.as_deref().unwrap_or(""))
+                            .unwrap();
+
+                    if is_same_password {
+                        return HttpResponse::BadRequest()
+                            .json("New password cannot be the same as the current password");
+                    }
+
+                    // Hash the new password
+                    let password_hash = bcrypt::hash(new_password, bcrypt::DEFAULT_COST).unwrap();
+                    User::update_password(pool.get_ref(), reset_token.user_id, &password_hash)
+                        .await
+                        .unwrap();
+
+                    // Delete the reset token after successful password reset
+                    PasswordResetToken::delete_by_user_id(pool.get_ref(), reset_token.user_id)
+                        .await
+                        .unwrap();
+
+                    HttpResponse::Ok().json("Password has been reset successfully")
+                }
+                Err(_) => {
+                    println!("User not found");
+                    HttpResponse::BadRequest().json("Invalid user")
+                }
+            }
         }
         Err(_) => HttpResponse::BadRequest().json("Invalid token"),
     }

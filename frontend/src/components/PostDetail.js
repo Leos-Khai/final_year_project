@@ -36,12 +36,14 @@ function PostDetail() {
   };
 
   const handleDelete = async () => {
-    try {
-      await deletePost(id);
-      navigate('/');
-    } catch (error) {
-      console.error('Error deleting post:', error);
-      setError('Error deleting post');
+    if (window.confirm('Are you sure you want to delete this post?')) {
+      try {
+        await deletePost(id);
+        navigate('/');
+      } catch (error) {
+        setError('Error deleting post.');
+        console.error('Error deleting post:', error);
+      }
     }
   };
 
@@ -86,6 +88,7 @@ function PostDetail() {
     <div className="post-detail-container">
       <div className="post-detail">
         <h1>{post.post_title}</h1>
+        <div className="author">Author: {post.author_name}</div>
         <div className="views">Views: {post.view_count}</div>
         <p>{post.post_content}</p>
         <button className="likes-button" onClick={handleLike}>Likes: {post.like_count}</button>
